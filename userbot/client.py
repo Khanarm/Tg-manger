@@ -6,3 +6,9 @@ client = TelegramClient(
     API_ID,
     API_HASH
 )
+
+
+async def start_userbot():
+    await client.start()
+    me = await client.get_me()
+    print(f"✅ Userbot Connected : {me.first_name} (@{me.username})")
