@@ -1,45 +1,35 @@
-from telethon import events, Button
-
-from config import OWNER_ID
-from userbot.channel import get_channels
+from telethon.tl.types import Channel
+from userbot.client import get_all_clients
 
 
-COMMANDS = {
-    "/setname": "setname",
-    "/setbio": "setbio",
-    "/setusername": "setusername",
-    "/setphoto": "setphoto",
-}
+async def get_channels():
+    """
+    Get all channels from all running userbots.
+    """
 
+    channels = []
 
-def register(bot):
+    clients = get_all_clients()
 
-    @bot.on(events.NewMessage(pattern=r"^/(setname|setbio|setusername|setphoto)$"))
-    async def channel_menu(event):
+    for userbot_id, client in clients.items():
 
-        if event.sender_id != OWNER_ID:
-            await event.reply("❌ You are not authorized.")
-            return
+        dialogs = await client.get_dialogs()
 
-        action = COMMANDS[event.raw_text]
+        for dialog in dialogs:
 
-        channels = await get_channels()
+            entity = dialog.entity
 
-        if not channels:
-            await event.reply("❌ No channels found.")
-            return
+            if (
+                isinstance(entity, Channel)
+                and entity.broadcast
+                and entity.creator
+            ):
 
-        buttons = []
+                channels.append({
+                    "channel_id": entity.id,
+                    "title": entity.title,
+                    "username": entity.username,
+                    "userbot_id": userbot_id,
+                })
 
-        for channel in channels:
-            buttons.append([
-                Button.inline(
-                    channel["title"],
-                    data=f"{action}:{channel['channel_id']}".encode()
-                )
-            ])
-
-        await event.reply(
-            "📢 Select a Channel",
-            buttons=buttons
-        )
+    return channels
