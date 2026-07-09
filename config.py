@@ -6,3 +6,6 @@ API_HASH = "YOUR_API_HASH"
 SESSION_NAME = "userbot"
 
 OWNER_ID = 123456789
+
+MONGO_URI = "mongodb://localhost:27017"
+DATABASE_NAME = "channel_manager"
