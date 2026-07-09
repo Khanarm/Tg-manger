@@ -1,4 +1,3 @@
-from .mongo import *
 from .mongo import (
     save_userbot,
     get_userbot,
