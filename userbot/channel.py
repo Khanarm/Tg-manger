@@ -5,7 +5,7 @@ from telethon import functions
 from telethon.tl.functions.channels import GetFullChannelRequest
 from telethon.tl.functions.messages import GetHistoryRequest
 
-async def get_channels():
+async def get_all_channels():
     """
     Get all channels from all running userbots.
     """
