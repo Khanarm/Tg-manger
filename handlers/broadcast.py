@@ -1,8 +1,8 @@
 from telethon import events
 from telethon.tl.functions.messages import ForwardMessagesRequest
 from config import OWNER_ID
-from database import get_all_channels
-from database import get_all_channels
+from userbot import get_all_channels
+from database mongo import get_all_channels
 
 
 def register(bot):
