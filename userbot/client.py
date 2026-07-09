@@ -1,27 +1,52 @@
 from telethon import TelegramClient
 from telethon.sessions import StringSession
-from telethon.tl.types import Channel
 
-from config import API_ID, API_HASH, STRING_SESSION
+from config import API_ID, API_HASH
+from database.mongo import get_all_userbots
 
-client = TelegramClient(
-    StringSession(STRING_SESSION),
-    API_ID,
-    API_HASH
-)
+# Store all running clients
+clients = {}
 
-async def start_userbot():
-    await client.start()
 
-async def get_channels():
-    channels = []
+async def start_userbots():
+    """
+    Start all saved userbots from MongoDB.
+    """
+    bots = await get_all_userbots()
 
-    async for dialog in client.iter_dialogs():
-        if isinstance(dialog.entity, Channel):
-            if dialog.entity.broadcast:
-                channels.append({
-                    "id": dialog.entity.id,
-                    "title": dialog.name
-                })
+    for bot in bots:
+        try:
+            session = bot["session"]
+            user_id = bot["user_id"]
 
-    return channels
+            client = TelegramClient(
+                StringSession(session),
+                API_ID,
+                API_HASH
+            )
+
+            await client.start()
+
+            me = await client.get_me()
+
+            clients[user_id] = client
+
+            print(f"✅ UserBot Started : {me.first_name} ({user_id})")
+
+        except Exception as e:
+            print(f"❌ Failed to start UserBot {bot.get('user_id')}")
+            print(e)
+
+
+def get_client(user_id: int):
+    """
+    Return running client by userbot id.
+    """
+    return clients.get(user_id)
+
+
+def get_all_clients():
+    """
+    Return all running clients.
+    """
+    return clients
