@@ -1,7 +1,7 @@
 from telethon import events
 from telethon.tl.functions.messages import ForwardMessagesRequest
 from config import OWNER_ID
-from database import get_channels
+from database import get_all_channels
 
 
 def register(bot):
@@ -24,7 +24,7 @@ def register(bot):
             if msg.raw_text == "/broadcast":
                 return
 
-            channels = await get_channels()
+            channels = await get_all_channels()
 
             if not channels:
                 await msg.reply("❌ No channels added.")
