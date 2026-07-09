@@ -1,7 +1,7 @@
 from telethon import events, Button
 
 from config import OWNER_ID
-from userbot.channel import get_channels
+from userbot.channel import get_all_channels
 
 
 COMMANDS = {
@@ -23,7 +23,7 @@ def register(bot):
 
         action = COMMANDS[event.raw_text]
 
-        channels = await get_channels()
+        channels = await get_all_channels()
 
         if not channels:
             await event.reply("❌ No channels found.")
