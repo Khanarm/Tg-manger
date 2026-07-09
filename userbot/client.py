@@ -1,13 +1,10 @@
-from telethon import TelegramClient
-from telethon.tl.types import Channel
-from config import API_ID, API_HASH, SESSION_NAME
+from telethon.sessions import StringSession
 
-client = TelegramClient(
-    SESSION_NAME,
+TelegramClient(
+    StringSession(STRING_SESSION),
     API_ID,
     API_HASH
 )
-
 
 async def start_userbot():
     await client.start()
