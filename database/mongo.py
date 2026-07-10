@@ -1,41 +1,58 @@
-from motor.motor_asyncio import AsyncIOMotorClient
-from config import MONGO_URI
+import sqlite3
 
-client = AsyncIOMotorClient(MONGO_URI)
+conn = sqlite3.connect("tg_manager.db", check_same_thread=False)
+conn.row_factory = sqlite3.Row
 
-db = client["tg_manager"]
+cur = conn.cursor()
 
-# Collections
-userbots = db["userbots"]
-channels = db["channels"]
+# ==========================
+# TABLES
+# ==========================
 
+cur.execute("""
+CREATE TABLE IF NOT EXISTS userbots (
+    user_id INTEGER PRIMARY KEY,
+    session TEXT
+)
+""")
+
+cur.execute("""
+CREATE TABLE IF NOT EXISTS channels (
+    channel_id INTEGER PRIMARY KEY,
+    title TEXT,
+    username TEXT,
+    userbot_id INTEGER
+)
+""")
+
+conn.commit()
 
 # ==========================
 # USERBOT
 # ==========================
 
 async def save_userbot(user_id: int, session: str):
-    await userbots.update_one(
-        {"user_id": user_id},
-        {
-            "$set": {
-                "user_id": user_id,
-                "session": session
-            }
-        },
-        upsert=True
-    )
+    cur.execute("""
+    INSERT OR REPLACE INTO userbots
+    (user_id, session)
+    VALUES (?, ?)
+    """, (user_id, session))
+    conn.commit()
 
 
 async def get_userbot(user_id: int):
-    return await userbots.find_one({"user_id": user_id})
+    cur.execute(
+        "SELECT * FROM userbots WHERE user_id=?",
+        (user_id,)
+    )
+    row = cur.fetchone()
+    return dict(row) if row else None
 
 
 async def get_all_userbots():
-    data = []
-    async for bot in userbots.find():
-        data.append(bot)
-    return data
+    cur.execute("SELECT * FROM userbots")
+    rows = cur.fetchall()
+    return [dict(i) for i in rows]
 
 
 # ==========================
@@ -48,34 +65,37 @@ async def save_channel(
     username: str,
     userbot_id: int
 ):
-    await channels.update_one(
-        {"channel_id": channel_id},
-        {
-            "$set": {
-                "channel_id": channel_id,
-                "title": title,
-                "username": username,
-                "userbot_id": userbot_id
-            }
-        },
-        upsert=True
-    )
+    cur.execute("""
+    INSERT OR REPLACE INTO channels
+    (channel_id, title, username, userbot_id)
+    VALUES (?, ?, ?, ?)
+    """, (
+        channel_id,
+        title,
+        username,
+        userbot_id
+    ))
+    conn.commit()
 
 
 async def get_channel(channel_id: int):
-    return await channels.find_one(
-        {"channel_id": channel_id}
+    cur.execute(
+        "SELECT * FROM channels WHERE channel_id=?",
+        (channel_id,)
     )
+    row = cur.fetchone()
+    return dict(row) if row else None
 
 
 async def get_all_channels():
-    data = []
-    async for ch in channels.find():
-        data.append(ch)
-    return data
+    cur.execute("SELECT * FROM channels")
+    rows = cur.fetchall()
+    return [dict(i) for i in rows]
 
 
 async def delete_channel(channel_id: int):
-    await channels.delete_one(
-        {"channel_id": channel_id}
-)
+    cur.execute(
+        "DELETE FROM channels WHERE channel_id=?",
+        (channel_id,)
+    )
+    conn.commit()
