@@ -111,7 +111,6 @@ async def get_channel_info(channel_id):
         "views": views,
     }
 
-
 async def get_channel(channel_id):
 
     client = CHANNEL_CLIENTS.get(channel_id)
@@ -140,24 +139,28 @@ async def rename_channel(channel_id: int, new_name: str):
             )
         )
 
-        # Name change ke baad service message delete karo
-async for msg in client.iter_messages(entity, limit=5):
-    if msg.action:
-        try:
-            await client.delete_messages(entity, msg.id)
-            print(f"✅ Deleted service message {msg.id}")
-        except Exception as e:
-            print("Delete Error:", e)
-
-     
+        # Last 5 messages check karo
         print("\n========== LAST 5 MESSAGES ==========")
 
         async for msg in client.iter_messages(entity, limit=5):
+
             print(f"ID: {msg.id}")
             print(f"TEXT: {msg.text}")
             print(f"ACTION: {msg.action}")
             print(f"TYPE: {type(msg)}")
             print("--------------------------------")
+
+            # Service message delete karne ki koshish
+            if msg.action:
+                try:
+                    await client.delete_messages(
+                        entity,
+                        [msg.id],
+                        revoke=True
+                    )
+                    print(f"✅ Deleted service message {msg.id}")
+                except Exception as e:
+                    print("Delete Error:", e)
 
         entity.title = new_name
 
@@ -185,6 +188,8 @@ async def update_channel_username(channel_id: int, new_username: str):
             )
         )
 
+        entity.username = new_username
+
         return True, "Username updated successfully"
 
     except Exception as e:
@@ -210,6 +215,19 @@ async def update_channel_photo(channel_id: int, photo_path: str):
                 photo=InputChatUploadedPhoto(uploaded)
             )
         )
+
+        # Photo change ke baad service message delete karne ki koshish
+        async for msg in client.iter_messages(entity, limit=5):
+            if msg.action:
+                try:
+                    await client.delete_messages(
+                        entity,
+                        [msg.id],
+                        revoke=True
+                    )
+                    print(f"✅ Deleted service message {msg.id}")
+                except Exception as e:
+                    print("Delete Error:", e)
 
         return True, "Photo updated successfully"
 
