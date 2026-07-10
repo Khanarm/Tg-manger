@@ -1,6 +1,7 @@
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from telethon.tl.types import Channel
+from telethon.tl.functions.channels import UpdateUsernameRequest
 from telethon.tl.functions.channels import (
     GetFullChannelRequest,
     EditTitleRequest,
@@ -139,3 +140,26 @@ async def rename_channel(channel_id: int, new_name: str):
     except Exception as e:
         print("Rename Error:", e)
         return False
+
+async def update_channel_username(channel_id: int, new_username: str):
+
+    client = CHANNEL_CLIENTS.get(channel_id)
+    entity = CHANNELS.get(channel_id)
+
+    if client is None or entity is None:
+        return False, "Channel not found"
+
+    try:
+
+        await client(
+            UpdateUsernameRequest(
+                channel=entity,
+                username=new_username
+            )
+        )
+
+        return True, "Username updated successfully"
+
+    except Exception as e:
+        print("Username Error:", e)
+        return False, str(e)
