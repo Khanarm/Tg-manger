@@ -103,12 +103,12 @@ async def get_channel_info(channel_id):
         views = getattr(msg, "views", 0) or 0
 
     return {
-    "client": client,
-    "entity": entity,
-    "title": entity.title,
-    "username": entity.username,
-    "subscribers": subscribers,
-    "views": views,
+        "client": client,
+        "entity": entity,
+        "title": entity.title,
+        "username": entity.username,
+        "subscribers": subscribers,
+        "views": views,
     }
 
 
@@ -140,6 +140,15 @@ async def rename_channel(channel_id: int, new_name: str):
             )
         )
 
+        print("\n========== LAST 5 MESSAGES ==========")
+
+        async for msg in client.iter_messages(entity, limit=5):
+            print(f"ID: {msg.id}")
+            print(f"TEXT: {msg.text}")
+            print(f"ACTION: {msg.action}")
+            print(f"TYPE: {type(msg)}")
+            print("--------------------------------")
+
         entity.title = new_name
 
         return True
@@ -147,6 +156,7 @@ async def rename_channel(channel_id: int, new_name: str):
     except Exception as e:
         print("Rename Error:", e)
         return False
+
 
 async def update_channel_username(channel_id: int, new_username: str):
 
@@ -170,6 +180,7 @@ async def update_channel_username(channel_id: int, new_username: str):
     except Exception as e:
         print("Username Error:", e)
         return False, str(e)
+
 
 async def update_channel_photo(channel_id: int, photo_path: str):
 
