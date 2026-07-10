@@ -75,3 +75,53 @@ async def receive_new_name(message: Message, state: FSMContext):
         await message.answer("❌ Failed to update channel name.")
 
     await state.clear()
+
+@router.callback_query(lambda c: c.data.startswith("channel_"))
+async def open_channel(callback: CallbackQuery):
+
+    channel_id = int(callback.data.split("_")[1])
+
+    data = await get_channel_info(channel_id)
+
+    if data is None:
+        await callback.answer("❌ Channel not found.", show_alert=True)
+        return
+
+    kb = InlineKeyboardBuilder()
+
+    kb.button(
+        text="✅ Confirm",
+        callback_data=f"confirm_{channel_id}"
+    )
+
+    kb.button(
+        text="⬅️ Back",
+        callback_data="back_channels"
+    )
+
+    kb.adjust(2)
+
+    text = (
+        f"📢 <b>{data['title']}</b>\n\n"
+        f"👥 Subscribers: <b>{data['subscribers']}</b>\n"
+        f"👁 Last Post Views: <b>{data['views']}</b>"
+    )
+
+    await callback.message.edit_text(
+        text,
+        reply_markup=kb.as_markup()
+    )
+
+    await callback.answer()
+
+@router.callback_query(lambda c: c.data == "back_channels")
+async def back_channels(callback: CallbackQuery):
+
+    channels = await get_all_channels()
+
+    await callback.message.edit_text(
+        "📢 Select a Channel",
+        reply_markup=channels_keyboard(channels)
+    )
+
+    await callback.answer()
