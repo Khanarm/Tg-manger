@@ -24,10 +24,11 @@ bot = TelegramClient(
 async def main():
 
     # Register Handlers
-    start_handler(bot)
-    channel_handler(bot)
-    callback_handler(bot)
-    broadcast_handler(bot)
+start_handler(bot)
+channel_handler(bot)
+callback_handler(bot)
+back_handler(bot)
+broadcast_handler(bot)
 
     # Start UserBots
     await start_userbots()
