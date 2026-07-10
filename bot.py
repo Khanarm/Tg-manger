@@ -8,7 +8,7 @@ from handlers.start import register as start_handler
 from handlers.channel import register as channel_handler
 from handlers.callback import register as callback_handler
 from handlers.broadcast import register as broadcast_handler
-
+from handlers.back import register as back_handler
 
 # ==========================
 # BOT CLIENT
