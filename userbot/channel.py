@@ -129,3 +129,27 @@ async def set_channel_bio(channel_id: int, new_bio: str):
     except Exception as e:
         print(e)
         return False
+
+async def set_channel_username(channel_id: int, username: str):
+
+    info = await get_channel_info(channel_id)
+
+    if not info:
+        return False
+
+    client = info["client"]
+    entity = info["entity"]
+
+    try:
+        await client(
+            functions.channels.UpdateUsernameRequest(
+                channel=entity,
+                username=username
+            )
+        )
+
+        return True
+
+    except Exception as e:
+        print(e)
+        return False
