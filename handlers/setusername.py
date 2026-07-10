@@ -127,5 +127,3 @@ else:
         )
 
     await message.answer(msg)
-
-    # state clear nahi karenge
