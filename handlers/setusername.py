@@ -2,7 +2,7 @@ from aiogram import Router, types, F
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
-
+from userbot.client import update_channel_username
 from states.setusername import SetUsernameState
 from userbot.client import get_all_channels
 
@@ -62,3 +62,46 @@ async def select_channel(
     )
 
     await callback.answer()
+
+@router.message(SetUsernameState.waiting_username)
+async def receive_username(
+    message: types.Message,
+    state: FSMContext
+):
+
+    username = message.text.strip()
+
+    data = await state.get_data()
+    channel_id = data.get("channel_id")
+
+    if not channel_id:
+        await message.answer(
+            "❌ Channel not selected"
+        )
+        await state.clear()
+        return
+
+
+    # @ remove kar do agar user ne bheja ho
+    username = username.replace("@", "")
+
+
+    success, result = await update_channel_username(
+        channel_id,
+        username
+    )
+
+
+    if success:
+        await message.answer(
+            f"✅ Username successfully changed\n\n"
+            f"New username: @{username}"
+        )
+    else:
+        await message.answer(
+            f"❌ Username change failed\n\n"
+            f"Error:\n{result}"
+        )
+
+
+    await state.clear()
