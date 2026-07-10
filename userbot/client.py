@@ -21,18 +21,27 @@ async def start_userbots():
             API_HASH
         )
 
+        async def start_userbots():
+    for session in STRING_SESSIONS:
+        client = TelegramClient(
+            StringSession(session),
+            API_ID,
+            API_HASH
+        )
+
         await client.start()
 
         me = await client.get_me()
         print(f"Started : {me.first_name}")
+
         count = 0
 
-async for dialog in client.iter_dialogs():
-    if dialog.is_channel:
-        print(dialog.name)
-        count += 1
+        async for dialog in client.iter_dialogs():
+            if dialog.is_channel:
+                print(dialog.name)
+                count += 1
 
-print(f"Total Channels = {count}")
+        print(f"Total Channels = {count}")
 
         clients.append(client)
 
