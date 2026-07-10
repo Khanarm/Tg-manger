@@ -1,3 +1,8 @@
+from aiogram.types import CallbackQuery, InlineKeyboardMarkup
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+
+from userbot.client import get_channel_info
+
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import Message
