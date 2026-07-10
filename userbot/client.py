@@ -71,7 +71,7 @@ async def get_channel_info(channel_id):
     last_views = 0
 
     async for msg in client.iter_messages(entity, limit=1):
-        last_views = msg.views or 0
+        last_views = getattr(msg, "views", 0) or 0
 
     return {
         "client": client,
