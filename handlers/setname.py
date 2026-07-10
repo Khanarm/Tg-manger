@@ -1,3 +1,4 @@
+from userbot.client import rename_channel
 from aiogram.fsm.context import FSMContext
 from states.rename import RenameState
 
@@ -75,3 +76,31 @@ async def confirm_channel(callback: CallbackQuery, state: FSMContext):
     )
 
     await callback.answer()
+
+@router.message(RenameState.waiting_name)
+async def receive_new_name(message: Message, state: FSMContext):
+
+    data = await state.get_data()
+
+    channel_id = data.get("channel_id")
+
+    if not channel_id:
+        await message.answer("❌ Channel not found.")
+        await state.clear()
+        return
+
+    ok = await rename_channel(
+        channel_id,
+        message.text.strip()
+    )
+
+    if ok:
+        await message.answer(
+            "✅ Channel name updated successfully."
+        )
+    else:
+        await message.answer(
+            "❌ Failed to update channel name."
+        )
+
+    await state.clear()
