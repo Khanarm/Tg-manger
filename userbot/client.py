@@ -25,6 +25,14 @@ async def start_userbots():
 
         me = await client.get_me()
         print(f"Started : {me.first_name}")
+        count = 0
+
+async for dialog in client.iter_dialogs():
+    if dialog.is_channel:
+        print(dialog.name)
+        count += 1
+
+print(f"Total Channels = {count}")
 
         clients.append(client)
 
