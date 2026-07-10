@@ -9,6 +9,7 @@ clients = []
 
 # channel_id -> client
 CHANNEL_CLIENTS = {}
+CHANNELS = {}
 
 async def start_userbots():
     for session in STRING_SESSIONS:
@@ -29,6 +30,7 @@ async def start_userbots():
 async def get_all_channels():
 
     CHANNEL_CLIENTS.clear()
+    CHANNELS.clear()
 
     channels = []
 
@@ -47,6 +49,7 @@ async def get_all_channels():
             channels.append(entity)
 
             CHANNEL_CLIENTS[entity.id] = client
+            CHANNELS[entity.id] = entity
 
     return channels
 
@@ -75,3 +78,14 @@ async def get_channel_info(channel_id):
         "subscribers": subscribers,
         "views": last_views
     }
+
+async def get_channel(channel_id):
+
+    client = CHANNEL_CLIENTS.get(channel_id)
+
+    entity = CHANNELS.get(channel_id)
+
+    if client is None or entity is None:
+        return None
+
+    return client, entity
