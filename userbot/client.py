@@ -103,11 +103,12 @@ async def get_channel_info(channel_id):
         views = getattr(msg, "views", 0) or 0
 
     return {
-        "client": client,
-        "entity": entity,
-        "title": entity.title,
-        "subscribers": subscribers,
-        "views": views,
+    "client": client,
+    "entity": entity,
+    "title": entity.title,
+    "username": entity.username,
+    "subscribers": subscribers,
+    "views": views,
     }
 
 
