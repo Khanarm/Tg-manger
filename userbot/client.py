@@ -169,9 +169,16 @@ async def update_channel_username(channel_id: int, new_username: str):
     except Exception as e:
         print("Username Error:", e)
         return False, str(e)
+
 async def update_channel_photo(channel_id: int, photo_path: str):
+
+    client = CHANNEL_CLIENTS.get(channel_id)
+    entity = CHANNELS.get(channel_id)
+
+    if client is None or entity is None:
+        return False, "Channel not found"
+
     try:
-        entity = await client.get_entity(channel_id)
 
         uploaded = await client.upload_file(photo_path)
 
@@ -182,7 +189,8 @@ async def update_channel_photo(channel_id: int, photo_path: str):
             )
         )
 
-        return True, "Success"
+        return True, "Photo updated successfully"
 
     except Exception as e:
+        print("Photo Error:", e)
         return False, str(e)
