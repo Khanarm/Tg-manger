@@ -91,8 +91,7 @@ async def receive_username(
         username
     )
 
-
-    if success:
+if success:
     await message.answer(
         f"✅ Username successfully changed\n\n"
         f"New username: @{username}"
@@ -127,3 +126,5 @@ else:
         )
 
     await message.answer(msg)
+
+    
