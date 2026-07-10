@@ -1,19 +1,18 @@
-from userbot.client import rename_channel
-from aiogram.fsm.context import FSMContext
-from states.rename import RenameState
-
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup
-from aiogram.utils.keyboard import InlineKeyboardBuilder
-
-from userbot.client import get_channel_info
-
 from aiogram import Router
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.fsm.context import FSMContext
 
 from config import OWNER_ID
-from userbot.client import get_all_channels
 from keyboards.channels import channels_keyboard
+from states.rename import RenameState
+
+from userbot.client import (
+    get_all_channels,
+    get_channel_info,
+    rename_channel,
+)
 
 router = Router()
 
@@ -36,31 +35,6 @@ async def setname(message: Message):
         reply_markup=channels_keyboard(channels)
     )
 
-async def get_channel_info(channel_id):
-
-    client = CHANNEL_CLIENTS.get(channel_id)
-
-    if client is None:
-        return None
-
-    entity = await client.get_entity(channel_id)
-
-    full = await client(GetFullChannelRequest(entity))
-
-    subscribers = full.full_chat.participants_count
-
-    last_views = 0
-
-    async for msg in client.iter_messages(entity, limit=1):
-        last_views = msg.views or 0
-
-    return {
-        "client": client,
-        "entity": entity,
-        "title": entity.title,
-        "subscribers": subscribers,
-        "views": last_views
-                                          }
 
 @router.callback_query(lambda c: c.data.startswith("confirm_"))
 async def confirm_channel(callback: CallbackQuery, state: FSMContext):
@@ -76,6 +50,7 @@ async def confirm_channel(callback: CallbackQuery, state: FSMContext):
     )
 
     await callback.answer()
+
 
 @router.message(RenameState.waiting_name)
 async def receive_new_name(message: Message, state: FSMContext):
@@ -95,12 +70,8 @@ async def receive_new_name(message: Message, state: FSMContext):
     )
 
     if ok:
-        await message.answer(
-            "✅ Channel name updated successfully."
-        )
+        await message.answer("✅ Channel name updated successfully.")
     else:
-        await message.answer(
-            "❌ Failed to update channel name."
-        )
+        await message.answer("❌ Failed to update channel name.")
 
     await state.clear()
