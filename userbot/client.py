@@ -140,6 +140,16 @@ async def rename_channel(channel_id: int, new_name: str):
             )
         )
 
+        # Name change ke baad service message delete karo
+async for msg in client.iter_messages(entity, limit=5):
+    if msg.action:
+        try:
+            await client.delete_messages(entity, msg.id)
+            print(f"✅ Deleted service message {msg.id}")
+        except Exception as e:
+            print("Delete Error:", e)
+
+     
         print("\n========== LAST 5 MESSAGES ==========")
 
         async for msg in client.iter_messages(entity, limit=5):
