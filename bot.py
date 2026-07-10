@@ -10,6 +10,8 @@ from handlers.callback import register as callback_handler
 from handlers.broadcast import register as broadcast_handler
 from handlers.back import register as back_handler
 from handlers.confirm import register as confirm_handler
+from handlers.message import register as message_handler
+
 # ==========================
 # BOT CLIENT
 # ==========================
