@@ -93,15 +93,39 @@ async def receive_username(
 
 
     if success:
-        await message.answer(
-            f"✅ Username successfully changed\n\n"
-            f"New username: @{username}"
-        )
-    else:
-        await message.answer(
-            f"❌ Username change failed\n\n"
-            f"Error:\n{result}"
-        )
-
+    await message.answer(
+        f"✅ Username successfully changed\n\n"
+        f"New username: @{username}"
+    )
 
     await state.clear()
+
+else:
+    error = str(result)
+
+    if "USERNAME_OCCUPIED" in error:
+        msg = (
+            "❌ Ye username already kisi aur ne le rakha hai.\n\n"
+            "Kripya koi dusra username bhejo."
+        )
+
+    elif "USERNAME_INVALID" in error:
+        msg = (
+            "❌ Invalid username.\n\n"
+            "Username rules:\n"
+            "• 5-32 characters\n"
+            "• Sirf a-z, 0-9 aur underscore (_)\n"
+            "• Space allowed nahi hai\n\n"
+            "Naya username bhejo."
+        )
+
+    else:
+        msg = (
+            f"❌ Username change failed\n\n"
+            f"{error}\n\n"
+            "Naya username try karo."
+        )
+
+    await message.answer(msg)
+
+    # state clear nahi karenge
