@@ -115,9 +115,10 @@ text = (
     )
 
     await callback.message.edit_text(
-        text,
-        reply_markup=kb.as_markup()
-    )
+    text,
+    reply_markup=kb.as_markup(),
+    parse_mode="HTML"
+                         )
 
     await callback.answer()
 
