@@ -2,9 +2,9 @@ from aiogram import Router, types, F
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.fsm.context import FSMContext
-from userbot.client import update_channel_username
+
+from userbot.client import update_channel_username, get_all_channels
 from states.setusername import SetUsernameState
-from userbot.client import get_all_channels
 
 
 router = Router()
@@ -63,6 +63,7 @@ async def select_channel(
 
     await callback.answer()
 
+
 @router.message(SetUsernameState.waiting_username)
 async def receive_username(
     message: types.Message,
@@ -82,7 +83,6 @@ async def receive_username(
         return
 
 
-    # @ remove kar do agar user ne bheja ho
     username = username.replace("@", "")
 
 
@@ -91,40 +91,40 @@ async def receive_username(
         username
     )
 
-if success:
-    await message.answer(
-        f"✅ Username successfully changed\n\n"
-        f"New username: @{username}"
-    )
 
-    await state.clear()
-
-else:
-    error = str(result)
-
-    if "USERNAME_OCCUPIED" in error:
-        msg = (
-            "❌ Ye username already kisi aur ne le rakha hai.\n\n"
-            "Kripya koi dusra username bhejo."
+    if success:
+        await message.answer(
+            f"✅ Username successfully changed\n\n"
+            f"New username: @{username}"
         )
 
-    elif "USERNAME_INVALID" in error:
-        msg = (
-            "❌ Invalid username.\n\n"
-            "Username rules:\n"
-            "• 5-32 characters\n"
-            "• Sirf a-z, 0-9 aur underscore (_)\n"
-            "• Space allowed nahi hai\n\n"
-            "Naya username bhejo."
-        )
+        await state.clear()
+
 
     else:
-        msg = (
-            f"❌ Username change failed\n\n"
-            f"{error}\n\n"
-            "Naya username try karo."
-        )
+        error = str(result)
 
-    await message.answer(msg)
+        if "USERNAME_OCCUPIED" in error:
+            msg = (
+                "❌ Ye username already kisi aur ne le rakha hai.\n\n"
+                "Kripya koi dusra username bhejo."
+            )
 
-    
+        elif "USERNAME_INVALID" in error:
+            msg = (
+                "❌ Invalid username.\n\n"
+                "Username rules:\n"
+                "• 5-32 characters\n"
+                "• Sirf a-z, 0-9 aur underscore (_)\n"
+                "• Space allowed nahi hai\n\n"
+                "Naya username bhejo."
+            )
+
+        else:
+            msg = (
+                f"❌ Username change failed\n\n"
+                f"{error}\n\n"
+                "Naya username try karo."
+            )
+
+        await message.answer(msg)
