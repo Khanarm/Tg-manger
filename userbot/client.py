@@ -169,3 +169,20 @@ async def update_channel_username(channel_id: int, new_username: str):
     except Exception as e:
         print("Username Error:", e)
         return False, str(e)
+async def update_channel_photo(channel_id: int, photo_path: str):
+    try:
+        entity = await client.get_entity(channel_id)
+
+        uploaded = await client.upload_file(photo_path)
+
+        await client(
+            EditPhotoRequest(
+                channel=entity,
+                photo=InputChatUploadedPhoto(uploaded)
+            )
+        )
+
+        return True, "Success"
+
+    except Exception as e:
+        return False, str(e)
