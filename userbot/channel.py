@@ -1,9 +1,10 @@
 from telethon.tl.types import Channel
-from userbot.client import get_all_clients
-
 from telethon import functions
 from telethon.tl.functions.channels import GetFullChannelRequest
 from telethon.tl.functions.messages import GetHistoryRequest
+
+from userbot.client import get_all_clients
+
 
 async def get_all_channels():
     """
@@ -14,28 +15,52 @@ async def get_all_channels():
 
     clients = get_all_clients()
 
+    print("========== DEBUG ==========")
+    print("Clients:", clients)
+
     for userbot_id, client in clients.items():
 
-        dialogs = await client.get_dialogs()
+        try:
+            me = await client.get_me()
+            print(f"Logged in UserBot: {userbot_id}")
+            print(f"User: {me.id} | {me.first_name}")
 
-        for dialog in dialogs:
+            dialogs = await client.get_dialogs()
+            print(f"Dialogs Found: {len(dialogs)}")
 
-            entity = dialog.entity
+            for dialog in dialogs:
 
-            if (
-                isinstance(entity, Channel)
-                and entity.broadcast
-                and entity.creator
-            ):
+                entity = dialog.entity
 
-                channels.append({
-                    "channel_id": entity.id,
-                    "title": entity.title,
-                    "username": entity.username,
-                    "userbot_id": userbot_id,
-                })
+                print(
+                    type(entity),
+                    getattr(entity, "title", None),
+                    getattr(entity, "broadcast", False),
+                    getattr(entity, "creator", False)
+                )
+
+                if (
+                    isinstance(entity, Channel)
+                    and entity.broadcast
+                    and entity.creator
+                ):
+                    print("FOUND CHANNEL:", entity.title)
+
+                    channels.append({
+                        "channel_id": entity.id,
+                        "title": entity.title,
+                        "username": entity.username,
+                        "userbot_id": userbot_id,
+                    })
+
+        except Exception as e:
+            print("ERROR:", e)
+
+    print("TOTAL CHANNELS:", len(channels))
+    print("===========================")
 
     return channels
+
 
 async def get_channel_info(channel_id: int):
 
@@ -77,10 +102,11 @@ async def get_channel_info(channel_id: int):
                 "views": views
             }
 
-        except:
+        except Exception:
             continue
 
     return None
+
 
 async def set_channel_name(channel_id: int, new_name: str):
 
@@ -89,22 +115,19 @@ async def set_channel_name(channel_id: int, new_name: str):
     if not info:
         return False
 
-    client = info["client"]
-    entity = info["entity"]
-
     try:
-        await client(
+        await info["client"](
             functions.channels.EditTitleRequest(
-                channel=entity,
+                channel=info["entity"],
                 title=new_name
             )
         )
-
         return True
 
     except Exception as e:
         print(e)
         return False
+
 
 async def set_channel_bio(channel_id: int, new_bio: str):
 
@@ -113,22 +136,19 @@ async def set_channel_bio(channel_id: int, new_bio: str):
     if not info:
         return False
 
-    client = info["client"]
-    entity = info["entity"]
-
     try:
-        await client(
+        await info["client"](
             functions.channels.EditAboutRequest(
-                channel=entity,
+                channel=info["entity"],
                 about=new_bio
             )
         )
-
         return True
 
     except Exception as e:
         print(e)
         return False
+
 
 async def set_channel_username(channel_id: int, username: str):
 
@@ -137,55 +157,15 @@ async def set_channel_username(channel_id: int, username: str):
     if not info:
         return False
 
-    client = info["client"]
-    entity = info["entity"]
-
     try:
-        await client(
+        await info["client"](
             functions.channels.UpdateUsernameRequest(
-                channel=entity,
+                channel=info["entity"],
                 username=username
             )
         )
-
         return True
 
     except Exception as e:
         print(e)
         return False
-
-async def get_all_channels():
-
-    channels = []
-
-    clients = get_all_clients()
-
-    print("Clients:", clients)
-
-    for userbot_id, client in clients.items():
-
-        me = await client.get_me()
-        print(f"Logged in: {me.id} - {me.first_name}")
-
-        dialogs = await client.get_dialogs()
-        print(f"Dialogs: {len(dialogs)}")
-
-        for dialog in dialogs:
-            entity = dialog.entity
-            print(type(entity), getattr(entity, "title", None))
-
-            if (
-                isinstance(entity, Channel)
-                and entity.broadcast
-                and entity.creator
-            ):
-                print("FOUND:", entity.title)
-
-                channels.append({
-                    "channel_id": entity.id,
-                    "title": entity.title,
-                    "username": entity.username,
-                    "userbot_id": userbot_id,
-                })
-
-    return channels
