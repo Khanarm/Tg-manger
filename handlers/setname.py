@@ -101,10 +101,17 @@ async def open_channel(callback: CallbackQuery):
 
     kb.adjust(2)
 
-    text = (
-        f"📢 <b>{data['title']}</b>\n\n"
-        f"👥 Subscribers: <b>{data['subscribers']}</b>\n"
-        f"👁 Last Post Views: <b>{data['views']}</b>"
+    username = (
+    f"@{data['username']}"
+    if data["username"]
+    else "No Username"
+)
+
+text = (
+    f"📢 <b>{data['title']}</b>\n\n"
+    f"👤 Username: <b>{username}</b>\n"
+    f"👥 Subscribers: <b>{data['subscribers']}</b>\n"
+    f"👁 Last Post Views: <b>{data['views']}</b>"
     )
 
     await callback.message.edit_text(
