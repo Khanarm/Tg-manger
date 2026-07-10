@@ -30,6 +30,7 @@ channel_handler(bot)
 callback_handler(bot)
 back_handler(bot)
 confirm_handler(bot)
+message_handler(bot)
 broadcast_handler(bot)
 
     # Start UserBots
