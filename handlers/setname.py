@@ -1,3 +1,6 @@
+from aiogram.fsm.context import FSMContext
+from states.rename import RenameState
+
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
@@ -57,3 +60,18 @@ async def get_channel_info(channel_id):
         "subscribers": subscribers,
         "views": last_views
                                           }
+
+@router.callback_query(lambda c: c.data.startswith("confirm_"))
+async def confirm_channel(callback: CallbackQuery, state: FSMContext):
+
+    channel_id = int(callback.data.split("_")[1])
+
+    await state.update_data(channel_id=channel_id)
+
+    await state.set_state(RenameState.waiting_name)
+
+    await callback.message.edit_text(
+        "✏️ Naya Channel Name bhejiye."
+    )
+
+    await callback.answer()
