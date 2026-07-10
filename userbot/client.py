@@ -5,6 +5,7 @@ from telethon.tl.functions.channels import UpdateUsernameRequest
 from telethon.tl.functions.channels import (
     GetFullChannelRequest,
     EditTitleRequest,
+    UpdateUsernameRequest,
 )
 
 from config import API_ID, API_HASH, STRING_SESSIONS
