@@ -31,3 +31,29 @@ async def setname(message: Message):
         "📢 Select a Channel",
         reply_markup=channels_keyboard(channels)
     )
+
+async def get_channel_info(channel_id):
+
+    client = CHANNEL_CLIENTS.get(channel_id)
+
+    if client is None:
+        return None
+
+    entity = await client.get_entity(channel_id)
+
+    full = await client(GetFullChannelRequest(entity))
+
+    subscribers = full.full_chat.participants_count
+
+    last_views = 0
+
+    async for msg in client.iter_messages(entity, limit=1):
+        last_views = msg.views or 0
+
+    return {
+        "client": client,
+        "entity": entity,
+        "title": entity.title,
+        "subscribers": subscribers,
+        "views": last_views
+                                          }
