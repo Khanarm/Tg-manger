@@ -1,10 +1,16 @@
-BOT_TOKEN=YOUR_BOT_TOKEN
+import os
+from dotenv import load_dotenv
 
-API_ID=12345678
-API_HASH=YOUR_API_HASH
+load_dotenv()
 
-OWNER_ID=123456789
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+API_ID = int(os.getenv("API_ID"))
+API_HASH = os.getenv("API_HASH")
 
-STRING_SESSION_1=
-STRING_SESSION_2=
-STRING_SESSION_3=
+OWNER_ID = int(os.getenv("OWNER_ID"))
+
+STRING_SESSIONS = []
+
+for key, value in os.environ.items():
+    if key.startswith("STRING_SESSION_") and value:
+        STRING_SESSIONS.append(value)
