@@ -42,7 +42,6 @@ async def confirm_channel(callback: CallbackQuery, state: FSMContext):
     channel_id = int(callback.data.split("_")[1])
 
     await state.update_data(channel_id=channel_id)
-
     await state.set_state(RenameState.waiting_name)
 
     await callback.message.edit_text(
@@ -56,7 +55,6 @@ async def confirm_channel(callback: CallbackQuery, state: FSMContext):
 async def receive_new_name(message: Message, state: FSMContext):
 
     data = await state.get_data()
-
     channel_id = data.get("channel_id")
 
     if not channel_id:
@@ -76,6 +74,7 @@ async def receive_new_name(message: Message, state: FSMContext):
 
     await state.clear()
 
+
 @router.callback_query(lambda c: c.data.startswith("channel_"))
 async def open_channel(callback: CallbackQuery):
 
@@ -84,7 +83,10 @@ async def open_channel(callback: CallbackQuery):
     data = await get_channel_info(channel_id)
 
     if data is None:
-        await callback.answer("❌ Channel not found.", show_alert=True)
+        await callback.answer(
+            "❌ Channel not found.",
+            show_alert=True
+        )
         return
 
     kb = InlineKeyboardBuilder()
@@ -102,25 +104,26 @@ async def open_channel(callback: CallbackQuery):
     kb.adjust(2)
 
     username = (
-    f"@{data['username']}"
-    if data["username"]
-    else "No Username"
-)
+        f"@{data['username']}"
+        if data["username"]
+        else "No Username"
+    )
 
-text = (
-    f"📢 <b>{data['title']}</b>\n\n"
-    f"👤 Username: <b>{username}</b>\n"
-    f"👥 Subscribers: <b>{data['subscribers']}</b>\n"
-    f"👁 Last Post Views: <b>{data['views']}</b>"
+    text = (
+        f"📢 <b>{data['title']}</b>\n\n"
+        f"👤 Username: <b>{username}</b>\n"
+        f"👥 Subscribers: <b>{data['subscribers']}</b>\n"
+        f"👁 Last Post Views: <b>{data['views']}</b>"
     )
 
     await callback.message.edit_text(
-    text,
-    reply_markup=kb.as_markup(),
-    parse_mode="HTML"
-                         )
+        text,
+        reply_markup=kb.as_markup(),
+        parse_mode="HTML"
+    )
 
     await callback.answer()
+
 
 @router.callback_query(lambda c: c.data == "back_channels")
 async def back_channels(callback: CallbackQuery):
