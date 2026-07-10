@@ -1,3 +1,5 @@
+from telethon.tl.functions.channels import EditTitleRequest
+
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from telethon.tl.types import Channel
@@ -89,3 +91,28 @@ async def get_channel(channel_id):
         return None
 
     return client, entity
+
+async def rename_channel(channel_id: int, new_name: str):
+
+    client = CHANNEL_CLIENTS.get(channel_id)
+
+    entity = CHANNELS.get(channel_id)
+
+    if client is None or entity is None:
+        return False
+
+    try:
+        await client(
+            EditTitleRequest(
+                channel=entity,
+                title=new_name
+            )
+        )
+
+        entity.title = new_name
+
+        return True
+
+    except Exception as e:
+        print(e)
+        return False
