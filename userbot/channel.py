@@ -153,3 +153,39 @@ async def set_channel_username(channel_id: int, username: str):
     except Exception as e:
         print(e)
         return False
+
+async def get_all_channels():
+
+    channels = []
+
+    clients = get_all_clients()
+
+    print("Clients:", clients)
+
+    for userbot_id, client in clients.items():
+
+        me = await client.get_me()
+        print(f"Logged in: {me.id} - {me.first_name}")
+
+        dialogs = await client.get_dialogs()
+        print(f"Dialogs: {len(dialogs)}")
+
+        for dialog in dialogs:
+            entity = dialog.entity
+            print(type(entity), getattr(entity, "title", None))
+
+            if (
+                isinstance(entity, Channel)
+                and entity.broadcast
+                and entity.creator
+            ):
+                print("FOUND:", entity.title)
+
+                channels.append({
+                    "channel_id": entity.id,
+                    "title": entity.title,
+                    "username": entity.username,
+                    "userbot_id": userbot_id,
+                })
+
+    return channels
