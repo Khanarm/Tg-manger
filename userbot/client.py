@@ -1,11 +1,16 @@
 from telethon import TelegramClient
 from telethon.sessions import StringSession
-from telethon.tl.types import Channel
-from telethon.tl.functions.channels import UpdateUsernameRequest
+
+from telethon.tl.types import (
+    Channel,
+    InputChatUploadedPhoto,
+)
+
 from telethon.tl.functions.channels import (
     GetFullChannelRequest,
     EditTitleRequest,
     UpdateUsernameRequest,
+    EditPhotoRequest,
 )
 
 from config import API_ID, API_HASH, STRING_SESSIONS
