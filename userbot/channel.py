@@ -81,3 +81,27 @@ async def get_channel_info(channel_id: int):
             continue
 
     return None
+
+async def set_channel_name(channel_id: int, new_name: str):
+
+    info = await get_channel_info(channel_id)
+
+    if not info:
+        return False
+
+    client = info["client"]
+    entity = info["entity"]
+
+    try:
+        await client(
+            functions.channels.EditTitleRequest(
+                channel=entity,
+                title=new_name
+            )
+        )
+
+        return True
+
+    except Exception as e:
+        print(e)
+        return False
