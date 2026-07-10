@@ -25,13 +25,14 @@ bot = TelegramClient(
 
 async def main():
 
-start_handler(bot)
-channel_handler(bot)
-callback_handler(bot)
-back_handler(bot)
-confirm_handler(bot)
-message_handler(bot)
-broadcast_handler(bot)
+    # Register Handlers
+    start_handler(bot)
+    channel_handler(bot)
+    callback_handler(bot)
+    back_handler(bot)
+    confirm_handler(bot)
+    message_handler(bot)
+    broadcast_handler(bot)
 
     # Start UserBots
     await start_userbots()
@@ -43,6 +44,7 @@ broadcast_handler(bot)
 
     print("🤖 Manager Bot Started")
 
+    # Keep Running
     await bot.run_until_disconnected()
 
 
