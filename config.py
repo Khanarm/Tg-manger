@@ -16,4 +16,6 @@ for key, value in os.environ.items():
         STRING_SESSIONS.append(value)
 
 MONGO_URI = os.getenv("MONGO_URI")
+print("MONGO_URI =", repr(MONGO_URI))
+
 DATABASE_NAME = "channel_manager"
