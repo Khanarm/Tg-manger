@@ -8,6 +8,7 @@ from handlers.start import router as start_router
 from handlers.setname import router as setname_router
 from userbot.client import start_userbots
 from handlers.setphoto import router as setphoto_router
+from handlers.panel import router as panel_router
 from handlers.setusername import router as setusername_router
 
 bot = Bot(BOT_TOKEN)
@@ -21,6 +22,7 @@ dp.include_router(start_router)
 dp.include_router(setname_router)
 dp.include_router(setusername_router)
 dp.include_router(setphoto_router)
+dp.include_router(panel_router)
 
 async def main():
     await start_userbots()
