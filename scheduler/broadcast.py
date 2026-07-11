@@ -18,4 +18,4 @@ async def broadcast_scheduler():
             )
 
         # 24 Hours
-        await asyncio.sleep(86400)
+        await asyncio.sleep(30)
