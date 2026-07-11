@@ -28,3 +28,7 @@ async def panel(message: Message):
         "📋 Select a Channel",
         reply_markup=panel_channels_keyboard(channels)
     )
+
+@router.message(Command("hello"))
+async def hello(message: Message):
+    await message.answer("Hello Working")
