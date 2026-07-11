@@ -10,3 +10,21 @@ from keyboards.panel import (
 )
 
 router = Router()
+
+@router.message(Command("panel"))
+async def panel(message: Message):
+
+    if message.from_user.id != OWNER_ID:
+        await message.answer("❌ You are not authorized.")
+        return
+
+    channels = await get_all_channels()
+
+    if not channels:
+        await message.answer("❌ No channels found.")
+        return
+
+    await message.answer(
+        "📋 Select a Channel",
+        reply_markup=panel_channels_keyboard(channels)
+    )
