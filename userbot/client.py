@@ -45,9 +45,19 @@ async def start_userbots():
         count = 0
 
         async for dialog in client.iter_dialogs():
-            if dialog.is_channel:
-                print(f"📢 {dialog.name}")
-                count += 1
+
+    if not dialog.is_channel:
+        continue
+
+    print(f"📢 {dialog.name}")
+
+    await save_channel(
+        channel_id=dialog.id,
+        title=dialog.name,
+        username=getattr(dialog.entity, "username", None),
+    )
+
+    count += 1
 
         print(f"✅ Total Channels = {count}")
 
