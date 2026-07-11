@@ -22,6 +22,9 @@ CHANNEL_CLIENTS = {}
 CHANNELS = {}
 
 
+async def get_channel_by_id(channel_id: int):
+    return CHANNELS.get(channel_id)
+
 async def start_userbots():
     clients.clear()
 
