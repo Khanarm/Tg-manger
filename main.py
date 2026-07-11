@@ -10,6 +10,7 @@ from userbot.client import start_userbots
 from handlers.setphoto import router as setphoto_router
 from handlers.panel import router as panel_router
 from handlers.setusername import router as setusername_router
+from database.mongo import db
 
 bot = Bot(BOT_TOKEN)
 
@@ -30,6 +31,10 @@ async def main():
     print("✅ Bot Started")
 
     await dp.start_polling(bot)
+    
+    await db.command("ping")
+
+print("✅ MongoDB Connected")
 
 
 if __name__ == "__main__":
