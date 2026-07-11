@@ -27,7 +27,41 @@ async def panel(message: Message):
         reply_markup=panel_channels_keyboard(channels)
     )
 
+@router.callback_query(F.data.startswith("panel_channel_"))
+async def open_channel(callback: CallbackQuery):
 
+    channel_id = int(callback.data.split("_")[2])
+
+    data = await get_channel_info(channel_id)
+
+    if data is None:
+        await callback.answer(
+            "❌ Channel not found",
+            show_alert=True
+        )
+        return
+
+    username = (
+        f"@{data['username']}"
+        if data["username"]
+        else "No Username"
+    )
+
+    text = (
+        f"📢 <b>{data['title']}</b>\n\n"
+        f"👤 Username: <b>{username}</b>\n"
+        f"👥 Subscribers: <b>{data['subscribers']}</b>\n"
+        f"👁 Last Post Views: <b>{data['views']}</b>"
+    )
+
+    await callback.message.edit_text(
+        text,
+        reply_markup=channel_info_keyboard(channel_id),
+        parse_mode="HTML"
+    )
+
+    await callback.answer()
+    
 @router.message(Command("hello"))
 async def hello(message: Message):
     await message.answer("Hello Working")
