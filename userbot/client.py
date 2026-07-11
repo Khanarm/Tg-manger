@@ -1,5 +1,6 @@
 from telethon import TelegramClient
 from telethon.sessions import StringSession
+from database.mongo import save_channel
 
 from telethon.tl.types import (
     Channel,
