@@ -15,6 +15,6 @@ for key, value in os.environ.items():
     if key.startswith("STRING_SESSION_") and value:
         STRING_SESSIONS.append(value)
 
-MONGO_URI = "mongodb+srv://:/?appName=Cluster0"
+MONGO_URI = ""
 
 DATABASE_NAME = "channel_manager"
