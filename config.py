@@ -15,6 +15,6 @@ for key, value in os.environ.items():
     if key.startswith("STRING_SESSION_") and value:
         STRING_SESSIONS.append(value)
 
-MONGO_URI = ""
+MONGO_URL = ""
 
 DATABASE_NAME = "channel_manager"
