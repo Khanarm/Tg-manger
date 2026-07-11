@@ -57,8 +57,8 @@ def edit_menu_keyboard(channel_id: int):
     )
 
     builder.button(
-        text="🖼 Change Photo",
-        callback_data=f"panel_photo_{channel_id}"
+    text="🖼 Change Photo",
+    callback_data=f"setphoto_{channel_id}"
     )
 
     builder.button(
