@@ -1,7 +1,7 @@
-from aiogram.fsm.state import StatesGroup, State
+from aiogram.fsm.state import State, StatesGroup
 
 
-class PanelStates(StatesGroup):
+class PanelState(StatesGroup):
     waiting_name = State()
     waiting_username = State()
     waiting_photo = State()
