@@ -19,6 +19,7 @@ async def save_channel(
     channel_id: int,
     title: str,
     username: str = None,
+    session_index: int = 0,
 ):
     await channels.update_one(
         {
@@ -28,7 +29,14 @@ async def save_channel(
             "$set": {
                 "title": title,
                 "username": username,
+                "session_index": session_index,
                 "updated_at": datetime.utcnow()
+            },
+            "$setOnInsert": {
+                "last_original_post_id": None,
+                "last_broadcast_id": None,
+                "last_broadcast_at": None,
+                "auto_broadcast": True
             }
         },
         upsert=True
