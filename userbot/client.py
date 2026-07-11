@@ -29,7 +29,7 @@ async def get_channel_by_id(channel_id: int):
 async def start_userbots():
     clients.clear()
 
-    for session in STRING_SESSIONS:
+    for session_index, session in enumerate(STRING_SESSIONS):
 
         client = TelegramClient(
             StringSession(session),
@@ -52,9 +52,10 @@ async def start_userbots():
     print(f"📢 {dialog.name}")
 
     await save_channel(
-        channel_id=dialog.id,
-        title=dialog.name,
-        username=getattr(dialog.entity, "username", None),
+    channel_id=dialog.id,
+    title=dialog.name,
+    username=getattr(dialog.entity, "username", None),
+    session_index=session_index,
     )
 
     count += 1
