@@ -11,6 +11,7 @@ def panel_channels_keyboard(channels):
         )
 
     builder.adjust(1)
+
     return builder.as_markup()
 
 
@@ -23,8 +24,18 @@ def channel_info_keyboard(channel_id: int):
     )
 
     builder.button(
+        text="🔄 Refresh",
+        callback_data=f"panel_channel_{channel_id}"
+    )
+
+    builder.button(
         text="⬅️ Back",
         callback_data="panel_back_channels"
+    )
+
+    builder.button(
+        text="❌ Close",
+        callback_data="panel_close"
     )
 
     builder.adjust(2)
@@ -37,39 +48,49 @@ def edit_menu_keyboard(channel_id: int):
 
     builder.button(
         text="📝 Change Name",
-        callback_data=f"edit_name_{channel_id}"
+        callback_data=f"panel_name_{channel_id}"
     )
 
     builder.button(
         text="👤 Change Username",
-        callback_data=f"edit_username_{channel_id}"
+        callback_data=f"panel_username_{channel_id}"
     )
 
     builder.button(
         text="🖼 Change Photo",
-        callback_data=f"edit_photo_{channel_id}"
+        callback_data=f"panel_photo_{channel_id}"
     )
 
     builder.button(
         text="📄 Change Bio",
-        callback_data=f"edit_bio_{channel_id}"
+        callback_data=f"panel_bio_{channel_id}"
     )
 
     builder.button(
         text="📢 Broadcast",
-        callback_data=f"edit_broadcast_{channel_id}"
+        callback_data=f"panel_broadcast_{channel_id}"
     )
 
     builder.button(
-        text="🔄 Refresh Info",
+        text="📊 Statistics",
+        callback_data=f"panel_stats_{channel_id}"
+    )
+
+    builder.button(
+        text="⬅️ Channel Info",
         callback_data=f"panel_channel_{channel_id}"
     )
 
     builder.button(
-        text="⬅️ Back",
-        callback_data=f"panel_channel_{channel_id}"
+        text="📋 Channel List",
+        callback_data="panel_back_channels"
     )
 
-    builder.adjust(1)
+    builder.button(
+        text="❌ Close",
+        callback_data="panel_close"
+    )
+
+    builder.adjust(2)
 
     return builder.as_markup()
