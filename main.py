@@ -11,6 +11,7 @@ from handlers.setphoto import router as setphoto_router
 from handlers.panel import router as panel_router
 from handlers.setusername import router as setusername_router
 from database.mongo import db
+from scheduler.broadcast import broadcast_scheduler
 
 bot = Bot(BOT_TOKEN)
 
@@ -26,15 +27,22 @@ dp.include_router(setphoto_router)
 dp.include_router(panel_router)
 
 async def main():
+    # MongoDB check
+    await db.command("ping")
+    print("✅ MongoDB Connected")
+
+    # Start Telethon userbots
     await start_userbots()
+
+    # Start scheduler
+    asyncio.create_task(
+        broadcast_scheduler()
+    )
 
     print("✅ Bot Started")
 
+    # Start bot
     await dp.start_polling(bot)
-    
-    await db.command("ping")
-
-print("✅ MongoDB Connected")
 
 
 if __name__ == "__main__":
