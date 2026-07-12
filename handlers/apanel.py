@@ -124,8 +124,23 @@ async def get_schedule_photo(
         )
         return
 
+    import os
+
+    os.makedirs("temp", exist_ok=True)
+
+    photo = message.photo[-1]
+
+    file = await message.bot.get_file(photo.file_id)
+
+    photo_path = f"temp/channel_{message.from_user.id}.jpg"
+
+    await message.bot.download_file(
+        file.file_path,
+        destination=photo_path
+    )
+
     await state.update_data(
-        photo=message.photo[-1].file_id
+        photo_path=photo_path
     )
 
     await message.answer(
@@ -135,7 +150,6 @@ async def get_schedule_photo(
     await state.set_state(
         PanelState.waiting_schedule_post
     )
-
 
 @router.message(PanelState.waiting_schedule_post)
 async def get_schedule_post(
