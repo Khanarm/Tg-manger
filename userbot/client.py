@@ -1,3 +1,4 @@
+import os
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 from database.mongo import save_channel
@@ -248,4 +249,42 @@ async def update_channel_photo(channel_id: int, photo_path: str):
 
     except Exception as e:
         print("Photo Error:", e)
+        return False, str(e)
+
+async def send_channel_post(
+    channel_id: int,
+    text: str = None,
+    file_path: str = None,
+):
+
+    client = CHANNEL_CLIENTS.get(channel_id)
+    entity = CHANNELS.get(channel_id)
+
+    if client is None or entity is None:
+        return False, "Channel not found"
+
+    try:
+
+        if file_path:
+
+            await client.send_file(
+                entity,
+                file=file_path,
+                caption=text or "",
+            )
+
+            if os.path.exists(file_path):
+                os.remove(file_path)
+
+        else:
+
+            await client.send_message(
+                entity,
+                text or "",
+            )
+
+        return True, "Post sent successfully"
+
+    except Exception as e:
+        print("Post Error:", e)
         return False, str(e)
