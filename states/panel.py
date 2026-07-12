@@ -6,4 +6,9 @@ class PanelState(StatesGroup):
     waiting_username = State()
     waiting_photo = State()
     waiting_bio = State()
-    waiting_post = State()
+
+    # Automation
+    waiting_action = State()
+    waiting_value = State()
+    waiting_date = State()
+    waiting_time = State()
