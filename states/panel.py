@@ -6,3 +6,4 @@ class PanelState(StatesGroup):
     waiting_username = State()
     waiting_photo = State()
     waiting_bio = State()
+    waiting_post = State()
