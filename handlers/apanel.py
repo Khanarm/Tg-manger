@@ -68,13 +68,7 @@ async def auto_select_channel(
 
 
     await callback.message.answer(
-        "⚙️ Select Action:\n\n"
-        "📝 name\n"
-        "👤 username\n"
-        "🖼 photo\n"
-        "📢 post\n\n"
-        "Example send:\n"
-        "name"
+        "📝 Send new channel name."
     )
 
 
