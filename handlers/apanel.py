@@ -255,7 +255,7 @@ async def select_time(
         data={
             "name": data["name"],
             "username": data["username"],
-            "photo": data["photo"],
+            "photo_path": data["photo_path"],
             "post_chat_id": data["post_chat_id"],
             "post_message_id": data["post_message_id"],
         },
