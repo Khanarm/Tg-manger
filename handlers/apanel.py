@@ -95,10 +95,10 @@ async def get_schedule_username(
     username = message.text.strip().replace("@", "")
 
     if not username:
-    await message.answer(
-        "❌ Please send a valid username."
-    )
-    return
+        await message.answer(
+            "❌ Please send a valid username."
+        )
+        return
 
     await state.update_data(
         username=username
