@@ -1,6 +1,11 @@
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
+from aiogram.types import FSInputFile
+import os
+import tempfile
+
+from userbot.client import send_channel_post
 
 from config import OWNER_ID
 
@@ -233,3 +238,25 @@ async def receive_username(message: Message, state: FSMContext):
             )
 
 # ---------- PART 2 END ----------
+@router.callback_query(F.data.startswith("panel_post_"))
+async def panel_post(callback: CallbackQuery, state: FSMContext):
+
+    channel_id = int(callback.data.split("_")[2])
+
+    await state.update_data(channel_id=channel_id)
+    await state.set_state(PanelState.waiting_post)
+
+    await callback.message.edit_text(
+        "📝 <b>Send the post you want to publish.</b>\n\n"
+        "Supported:\n"
+        "• Text\n"
+        "• Photo\n"
+        "• Video\n"
+        "• Document\n"
+        "• Audio\n"
+        "• Animation\n\n"
+        "Send any one message now.",
+        parse_mode="HTML"
+    )
+
+    await callback.answer()
