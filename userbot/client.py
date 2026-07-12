@@ -186,9 +186,6 @@ async def rename_channel(channel_id: int, new_name: str):
         print("Rename Error:", e)
         return False
         
-async def update_channel_username_auto(channel_id: int, username: str):
-    pass
-
 async def update_channel_username(channel_id: int, new_username: str):
 
     client = CHANNEL_CLIENTS.get(channel_id)
@@ -214,6 +211,9 @@ async def update_channel_username(channel_id: int, new_username: str):
         print("Username Error:", e)
         return False, str(e)
 
+
+async def update_channel_username_auto(channel_id: int, username: str):
+    pass
 
 async def update_channel_photo(channel_id: int, photo_path: str):
 
