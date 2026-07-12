@@ -1,19 +1,18 @@
-from aiogram.fsm.state import State, StatesGroup
+from aiogram.fsm.state import StatesGroup, State
 
 
 class PanelState(StatesGroup):
-    # Normal features
+
+    # Normal Panel
     waiting_name = State()
     waiting_username = State()
-    waiting_photo = State()
-    waiting_bio = State()
+    waiting_post = State()
 
-    # Scheduled automation
+    # Automation Panel
     waiting_schedule_name = State()
     waiting_schedule_username = State()
     waiting_schedule_photo = State()
     waiting_schedule_post = State()
+
     waiting_date = State()
     waiting_time = State()
-
-    waiting_confirm = State()
