@@ -291,15 +291,14 @@ async def select_time(
     )
 
     await create_task(
-        channel_id=data["channel_id"],
-        data={
-            "name": data["name"],
-            "username": data["username"],
-            "photo_path": data["photo_path"],
-            "post_chat_id": data["post_chat_id"],
-            "post_message_id": data["post_message_id"],
-        },
-        run_at=run_at
+    channel_id=data["channel_id"],
+    data={
+        "name": data["name"],
+        "username": data["username"],
+        "photo_path": data["photo_path"],
+        "post": data["post"],
+    },
+    run_at=run_at
     )
 
     await callback.message.edit_text(
