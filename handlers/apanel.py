@@ -156,16 +156,54 @@ async def get_schedule_post(
     message: Message,
     state: FSMContext
 ):
+    import os
+
+    os.makedirs("temp", exist_ok=True)
+
+    post_data = {}
+
+    # Photo + caption
+    if message.photo:
+
+        photo = message.photo[-1]
+
+        file = await message.bot.get_file(
+            photo.file_id
+        )
+
+        photo_path = f"temp/post_{message.from_user.id}.jpg"
+
+        await message.bot.download_file(
+            file.file_path,
+            destination=photo_path
+        )
+
+        post_data["file_path"] = photo_path
+        post_data["text"] = message.caption or ""
+
+    # Only text
+    elif message.text:
+
+        post_data["file_path"] = None
+        post_data["text"] = message.text
+
+    else:
+        await message.answer(
+            "❌ Only text or photo post allowed."
+        )
+        return
+
+
     await state.update_data(
-        post_chat_id=message.chat.id,
-        post_message_id=message.message_id
+        post=post_data
     )
+
 
     builder = InlineKeyboardBuilder()
 
     today = datetime.now()
 
-    for i in range(31):
+    for i in range(1, 31):
         date = today + timedelta(days=i)
 
         builder.button(
@@ -175,10 +213,12 @@ async def get_schedule_post(
 
     builder.adjust(2)
 
+
     await message.answer(
         "📅 Select Date",
         reply_markup=builder.as_markup()
     )
+
 
     await state.set_state(
         PanelState.waiting_date
