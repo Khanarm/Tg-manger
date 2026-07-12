@@ -16,3 +16,5 @@ class PanelState(StatesGroup):
 
     waiting_date = State()
     waiting_time = State()
+
+print("WAITING POST EXISTS:", hasattr(PanelState, "waiting_post"))
