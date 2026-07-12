@@ -185,7 +185,9 @@ async def rename_channel(channel_id: int, new_name: str):
     except Exception as e:
         print("Rename Error:", e)
         return False
-
+        
+async def update_channel_username_auto(channel_id: int, username: str):
+    pass
 
 async def update_channel_username(channel_id: int, new_username: str):
 
@@ -211,8 +213,6 @@ async def update_channel_username(channel_id: int, new_username: str):
     except Exception as e:
         print("Username Error:", e)
         return False, str(e)
-
-async def update_channel_username_auto(...)
 
 
 async def update_channel_photo(channel_id: int, photo_path: str):
