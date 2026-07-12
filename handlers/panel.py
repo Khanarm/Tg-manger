@@ -334,7 +334,8 @@ async def receive_text_post(message: Message, state: FSMContext):
             if info["username"]
             else "No Username"
         )
-        @router.message(PanelState.waiting_post, F.text)
+
+@router.message(PanelState.waiting_post, F.text)
 async def receive_text_post(message: Message, state: FSMContext):
 
     data = await state.get_data()
@@ -358,14 +359,8 @@ async def receive_text_post(message: Message, state: FSMContext):
             if info["username"]
             else "No Username"
         )
+
         await message.answer(
-            f"⚙️ <b>Edit Menu</b>\n\n"
-            f"📢 {info['title']}\n"
-            f"👤 {username}",
-            parse_mode="HTML",
-            reply_markup=edit_menu_keyboard(channel_id)
-        )
-await message.answer(
             f"⚙️ <b>Edit Menu</b>\n\n"
             f"📢 {info['title']}\n"
             f"👤 {username}",
@@ -380,4 +375,3 @@ await message.answer(
         await message.answer(
             f"❌ Failed to publish post.\n\n{result}"
         )
-        
