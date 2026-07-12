@@ -1,4 +1,5 @@
 from aiogram import Router, F
+from states.panel import PanelState
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 import os
