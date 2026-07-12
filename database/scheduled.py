@@ -2,13 +2,16 @@ from datetime import datetime
 
 from .mongo import db
 
+from bson import ObjectId
+
+
 scheduled_tasks = db.scheduled_tasks
 
 
 async def create_task(
     channel_id: int,
     action: str,
-    value: str,
+    data: dict,
     run_at: datetime,
 ):
 
@@ -16,7 +19,7 @@ async def create_task(
         {
             "channel_id": channel_id,
             "action": action,
-            "value": value,
+            "data": data,
             "run_at": run_at,
             "status": "pending",
             "created_at": datetime.utcnow(),
@@ -28,23 +31,23 @@ async def create_task(
     return str(result.inserted_id)
 
 
+
 async def get_pending_tasks():
 
-    result = []
+    tasks = []
 
     async for task in scheduled_tasks.find(
         {
             "status": "pending"
         }
     ):
-        result.append(task)
+        tasks.append(task)
 
-    return result
+    return tasks
+
 
 
 async def mark_completed(task_id):
-
-    from bson import ObjectId
 
     await scheduled_tasks.update_one(
         {
@@ -59,9 +62,11 @@ async def mark_completed(task_id):
     )
 
 
-async def mark_failed(task_id, error):
 
-    from bson import ObjectId
+async def mark_failed(
+    task_id,
+    error
+):
 
     await scheduled_tasks.update_one(
         {
@@ -76,9 +81,12 @@ async def mark_failed(task_id, error):
     )
 
 
-async def get_channel_tasks(channel_id):
 
-    result = []
+async def get_channel_tasks(
+    channel_id
+):
+
+    tasks = []
 
     async for task in scheduled_tasks.find(
         {
@@ -88,17 +96,18 @@ async def get_channel_tasks(channel_id):
         "run_at",
         1
     ):
-        result.append(task)
+        tasks.append(task)
 
-    return result
+    return tasks
 
 
-async def delete_task(task_id):
 
-    from bson import ObjectId
+async def delete_task(
+    task_id
+):
 
     await scheduled_tasks.delete_one(
         {
             "_id": ObjectId(task_id)
         }
-          )
+    )
