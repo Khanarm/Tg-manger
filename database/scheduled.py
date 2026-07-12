@@ -10,7 +10,6 @@ scheduled_tasks = db.scheduled_tasks
 
 async def create_task(
     channel_id: int,
-    action: str,
     data: dict,
     run_at: datetime,
 ):
@@ -18,7 +17,6 @@ async def create_task(
     result = await scheduled_tasks.insert_one(
         {
             "channel_id": channel_id,
-            "action": action,
             "data": data,
             "run_at": run_at,
             "status": "pending",
