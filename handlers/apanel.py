@@ -81,3 +81,46 @@ async def auto_select_channel(
 
 
     await callback.answer()
+
+@router.message(PanelState.waiting_action)
+async def get_action(
+    message: Message,
+    state: FSMContext
+):
+
+    action = message.text.lower().strip()
+
+    if action not in [
+        "name",
+        "username",
+        "photo",
+        "post"
+    ]:
+        await message.answer(
+            "❌ Invalid action\n\n"
+            "Use:\n"
+            "name\n"
+            "username\n"
+            "photo\n"
+            "post"
+        )
+        return
+
+
+    await state.update_data(
+        action=action
+    )
+
+
+    await message.answer(
+        "📝 Ab value bhejo.\n\n"
+        "Example:\n"
+        "Movie Hub\n"
+        "moviehub\n"
+        "photo path"
+    )
+
+
+    await state.set_state(
+        PanelState.waiting_value
+    )
