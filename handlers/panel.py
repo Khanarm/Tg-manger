@@ -297,6 +297,8 @@ async def receive_text_post(message: Message, state: FSMContext):
 
     else:
 
-        await message.answer(
-            f"❌ Failed to publish post.\n\n{result}"
-    )
+        else:
+
+    await message.answer(
+        f"❌ Failed to publish post.\n\n{result}"
+            )
