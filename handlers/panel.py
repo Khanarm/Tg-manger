@@ -1,17 +1,18 @@
 from aiogram import Router, F
-from states.panel import PanelState
 from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
-import os
-import tempfile
+from aiogram.fsm.context import FSMContext
 
-from userbot.client import send_channel_post
+from states.panel import PanelState
 
 from config import OWNER_ID
 
 from userbot.client import (
     get_all_channels,
     get_channel_info,
+    send_channel_post,
+    rename_channel,
+    update_channel_username,
 )
 
 from keyboards.panel import (
@@ -20,6 +21,7 @@ from keyboards.panel import (
     edit_menu_keyboard,
 )
 
+
 router = Router()
 
 
@@ -27,13 +29,17 @@ router = Router()
 async def panel(message: Message):
 
     if message.from_user.id != OWNER_ID:
-        await message.answer("❌ You are not authorized.")
+        await message.answer(
+            "❌ You are not authorized."
+        )
         return
 
     channels = await get_all_channels()
 
     if not channels:
-        await message.answer("❌ No channels found.")
+        await message.answer(
+            "❌ No channels found."
+        )
         return
 
     await message.answer(
@@ -58,11 +64,13 @@ async def back_channels(callback: CallbackQuery):
 @router.callback_query(F.data.startswith("panel_channel_"))
 async def open_channel(callback: CallbackQuery):
 
-    channel_id = int(callback.data.split("_")[2])
+    channel_id = int(
+        callback.data.split("_")[2]
+    )
 
-    data = await get_channel_info(channel_id)
+    info = await get_channel_info(channel_id)
 
-    if data is None:
+    if info is None:
         await callback.answer(
             "❌ Channel not found",
             show_alert=True
@@ -70,16 +78,16 @@ async def open_channel(callback: CallbackQuery):
         return
 
     username = (
-        f"@{data['username']}"
-        if data["username"]
+        f"@{info['username']}"
+        if info["username"]
         else "No Username"
     )
 
     text = (
-        f"📢 <b>{data['title']}</b>\n\n"
+        f"📢 <b>{info['title']}</b>\n\n"
         f"👤 Username : <b>{username}</b>\n"
-        f"👥 Subscribers : <b>{data['subscribers']}</b>\n"
-        f"👁 Last Post Views : <b>{data['views']}</b>"
+        f"👥 Subscribers : <b>{info['subscribers']}</b>\n"
+        f"👁 Last Post Views : <b>{info['views']}</b>"
     )
 
     await callback.message.edit_text(
@@ -90,39 +98,44 @@ async def open_channel(callback: CallbackQuery):
 
     await callback.answer()
 
-
 @router.callback_query(F.data.startswith("panel_edit_"))
 async def edit_menu(callback: CallbackQuery):
 
-    channel_id = int(callback.data.split("_")[2])
+    channel_id = int(
+        callback.data.split("_")[2]
+    )
 
     await callback.message.edit_text(
-        "⚙️ <b>Edit Menu</b>\n\nChoose an option.",
+        "⚙️ <b>Edit Menu</b>\n\n"
+        "Choose an option.",
         parse_mode="HTML",
         reply_markup=edit_menu_keyboard(channel_id)
     )
 
     await callback.answer()
 
-# ---------- PART 1 END ----------
-# ---------- PART 2 START ----------
 
-from aiogram.fsm.context import FSMContext
-from states.panel import PanelState
-
-from userbot.client import (
-    rename_channel,
-    update_channel_username,
-)
-
+# =========================
+# CHANGE CHANNEL NAME
+# =========================
 
 @router.callback_query(F.data.startswith("panel_name_"))
-async def panel_change_name(callback: CallbackQuery, state: FSMContext):
+async def panel_change_name(
+    callback: CallbackQuery,
+    state: FSMContext
+):
 
-    channel_id = int(callback.data.split("_")[2])
+    channel_id = int(
+        callback.data.split("_")[2]
+    )
 
-    await state.update_data(channel_id=channel_id)
-    await state.set_state(PanelState.waiting_name)
+    await state.update_data(
+        channel_id=channel_id
+    )
+
+    await state.set_state(
+        PanelState.waiting_name
+    )
 
     await callback.message.edit_text(
         "📝 Send new channel name."
@@ -132,28 +145,42 @@ async def panel_change_name(callback: CallbackQuery, state: FSMContext):
 
 
 @router.message(PanelState.waiting_name)
-async def receive_new_name(message: Message, state: FSMContext):
+async def receive_new_name(
+    message: Message,
+    state: FSMContext
+):
 
     data = await state.get_data()
+
     channel_id = data["channel_id"]
 
-    ok = await rename_channel(
+    name = message.text.strip()
+
+    success = await rename_channel(
         channel_id,
-        message.text.strip()
+        name
     )
 
-    if ok:
-        await message.answer("✅ Channel name updated.")
+    if success:
+        await message.answer(
+            "✅ Channel name updated."
+        )
     else:
-        await message.answer("❌ Failed to update channel name.")
+        await message.answer(
+            "❌ Failed to update channel name."
+        )
 
-    info = await get_channel_info(channel_id)
+
+    info = await get_channel_info(
+        channel_id
+    )
 
     username = (
         f"@{info['username']}"
         if info["username"]
         else "No Username"
     )
+
 
     await message.answer(
         f"⚙️ <b>Edit Menu</b>\n\n"
@@ -163,88 +190,145 @@ async def receive_new_name(message: Message, state: FSMContext):
         reply_markup=edit_menu_keyboard(channel_id)
     )
 
+
     await state.clear()
 
 
+# =========================
+# CHANGE USERNAME
+# =========================
+
 @router.callback_query(F.data.startswith("panel_username_"))
-async def panel_change_username(callback: CallbackQuery, state: FSMContext):
+async def panel_change_username(
+    callback: CallbackQuery,
+    state: FSMContext
+):
 
-    channel_id = int(callback.data.split("_")[2])
+    channel_id = int(
+        callback.data.split("_")[2]
+    )
 
-    await state.update_data(channel_id=channel_id)
-    await state.set_state(PanelState.waiting_username)
+    await state.update_data(
+        channel_id=channel_id
+    )
+
+    await state.set_state(
+        PanelState.waiting_username
+    )
 
     await callback.message.edit_text(
-        "👤 Send new username.\n\nExample:\nmychannel123"
+        "👤 Send new username.\n\n"
+        "Example:\nmychannel123"
     )
 
     await callback.answer()
 
-
 @router.message(PanelState.waiting_username)
-async def receive_username(message: Message, state: FSMContext):
+async def receive_username(
+    message: Message,
+    state: FSMContext
+):
 
     data = await state.get_data()
 
     channel_id = data["channel_id"]
 
-    username = message.text.replace("@", "").strip()
+    username = (
+        message.text
+        .replace("@", "")
+        .strip()
+    )
+
 
     success, result = await update_channel_username(
         channel_id,
         username
     )
 
+
     if success:
 
-        await message.answer("✅ Username updated.")
+        await message.answer(
+            "✅ Username updated."
+        )
 
-        info = await get_channel_info(channel_id)
+        info = await get_channel_info(
+            channel_id
+        )
 
-        username = (
+        current_username = (
             f"@{info['username']}"
             if info["username"]
             else "No Username"
         )
 
+
         await message.answer(
             f"⚙️ <b>Edit Menu</b>\n\n"
             f"📢 {info['title']}\n"
-            f"👤 {username}",
+            f"👤 {current_username}",
             parse_mode="HTML",
             reply_markup=edit_menu_keyboard(channel_id)
         )
 
         await state.clear()
 
+
     else:
 
-        if "USERNAME_OCCUPIED" in str(result):
+        error = str(result)
+
+
+        if "USERNAME_OCCUPIED" in error:
 
             await message.answer(
-                "❌ Username already taken.\n\nSend another username."
+                "❌ Username already taken.\n\n"
+                "Send another username."
             )
 
-        elif "USERNAME_INVALID" in str(result):
+
+        elif "USERNAME_INVALID" in error:
 
             await message.answer(
-                "❌ Invalid username.\n\nSend another username."
+                "❌ Invalid username.\n\n"
+                "Send another username."
             )
+
 
         else:
 
             await message.answer(
-                f"❌ {result}\n\nTry again."
+                f"❌ {result}\n\n"
+                "Try again."
             )
 
-# ---------- PART 2 END ----------
+
+
+# =========================
+# CREATE POST
+# =========================
+
+
 @router.callback_query(F.data.startswith("panel_post_"))
-async def panel_post(callback: CallbackQuery, state: FSMContext):
+async def panel_post(
+    callback: CallbackQuery,
+    state: FSMContext
+):
 
-    channel_id = int(callback.data.split("_")[2])
+    channel_id = int(
+        callback.data.split("_")[2]
+    )
 
-    await state.update_data(channel_id=channel_id)
-    await state.set_state(PanelState.waiting_post)
+
+    await state.update_data(
+        channel_id=channel_id
+    )
+
+
+    await state.set_state(
+        PanelState.waiting_post
+    )
+
 
     await callback.message.edit_text(
         "📝 <b>Send the post you want to publish.</b>\n\n"
@@ -259,18 +343,28 @@ async def panel_post(callback: CallbackQuery, state: FSMContext):
         parse_mode="HTML"
     )
 
+
     await callback.answer()
 
-@router.message(PanelState.waiting_post, F.text)
-async def receive_text_post(message: Message, state: FSMContext):
+@router.message(
+    PanelState.waiting_post,
+    F.text
+)
+async def receive_text_post(
+    message: Message,
+    state: FSMContext
+):
 
     data = await state.get_data()
+
     channel_id = data["channel_id"]
+
 
     success, result = await send_channel_post(
         channel_id=channel_id,
-        text=message.text,
+        text=message.text
     )
+
 
     if success:
 
@@ -278,7 +372,11 @@ async def receive_text_post(message: Message, state: FSMContext):
             "✅ Post published successfully."
         )
 
-        info = await get_channel_info(channel_id)
+
+        info = await get_channel_info(
+            channel_id
+        )
+
 
         username = (
             f"@{info['username']}"
@@ -286,79 +384,6 @@ async def receive_text_post(message: Message, state: FSMContext):
             else "No Username"
         )
 
-        @router.message(PanelState.waiting_post, F.text)
-async def receive_text_post(message: Message, state: FSMContext):
-
-    data = await state.get_data()
-    channel_id = data["channel_id"]
-
-    success, result = await send_channel_post(
-        channel_id=channel_id,
-        text=message.text,
-    )
-
-    if success:
-
-        await message.answer(
-            "✅ Post published successfully."
-        )
-
-        info = await get_channel_info(channel_id)
-
-        username = (
-            f"@{info['username']}"
-            if info["username"]
-            else "No Username"
-        )
-        @router.message(PanelState.waiting_post, F.text)
-async def receive_text_post(message: Message, state: FSMContext):
-
-    data = await state.get_data()
-    channel_id = data["channel_id"]
-
-    success, result = await send_channel_post(
-        channel_id=channel_id,
-        text=message.text,
-    )
-
-    if success:
-
-        await message.answer(
-            "✅ Post published successfully."
-        )
-
-        info = await get_channel_info(channel_id)
-
-        username = (
-            f"@{info['username']}"
-            if info["username"]
-            else "No Username"
-        )
-
-@router.message(PanelState.waiting_post, F.text)
-async def receive_text_post(message: Message, state: FSMContext):
-
-    data = await state.get_data()
-    channel_id = data["channel_id"]
-
-    success, result = await send_channel_post(
-        channel_id=channel_id,
-        text=message.text,
-    )
-
-    if success:
-
-        await message.answer(
-            "✅ Post published successfully."
-        )
-
-        info = await get_channel_info(channel_id)
-
-        username = (
-            f"@{info['username']}"
-            if info["username"]
-            else "No Username"
-        )
 
         await message.answer(
             f"⚙️ <b>Edit Menu</b>\n\n"
@@ -368,10 +393,13 @@ async def receive_text_post(message: Message, state: FSMContext):
             reply_markup=edit_menu_keyboard(channel_id)
         )
 
+
         await state.clear()
+
 
     else:
 
         await message.answer(
-            f"❌ Failed to publish post.\n\n{result}"
+            f"❌ Failed to publish post.\n\n"
+            f"{result}"
         )
