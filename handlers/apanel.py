@@ -50,7 +50,7 @@ async def apanel(message: Message):
 
 
 @router.callback_query(
-    F.data.startswith("panel_channel_")
+    F.data.startswith("apanel_channel_")
 )
 async def auto_select_channel(
     callback: CallbackQuery,
