@@ -12,6 +12,8 @@ from handlers.panel import router as panel_router
 from handlers.setusername import router as setusername_router
 from database.mongo import db
 from scheduler.broadcast import broadcast_scheduler
+from userbot.client import start_userbots
+from automation.task_runner import task_scheduler
 
 bot = Bot(BOT_TOKEN)
 
