@@ -94,3 +94,17 @@ def edit_menu_keyboard(channel_id: int):
     builder.adjust(2)
 
     return builder.as_markup()
+
+def apanel_channels_keyboard(channels):
+
+    builder = InlineKeyboardBuilder()
+
+    for channel in channels:
+        builder.button(
+            text=f"📢 {channel.title}",
+            callback_data=f"apanel_channel_{channel.id}"
+        )
+
+    builder.adjust(1)
+
+    return builder.as_markup()
