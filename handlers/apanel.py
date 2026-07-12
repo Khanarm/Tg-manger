@@ -121,6 +121,115 @@ async def get_action(
     await state.set_state(
         PanelState.waiting_value
     )
+@router.callback_query(
+    F.data.startswith("apanel_channel_")
+)
+async def auto_select_channel(...):
+    ...
+
+@router.message(PanelState.waiting_schedule_username)
+async def get_schedule_username(
+    message: Message,
+    state: FSMContext
+):
+    username = message.text.strip().replace("@", "")
+
+    await state.update_data(
+        username=username
+    )
+
+    await message.answer(
+        "🖼 Send new channel photo."
+    )
+
+    await state.set_state(
+        PanelState.waiting_schedule_photo
+    )
+
+@router.message(PanelState.waiting_schedule_photo)
+async def get_schedule_photo(
+    message: Message,
+    state: FSMContext
+):
+    if not message.photo:
+        await message.answer(
+            "❌ Please send a photo."
+        )
+        return
+
+    photo = message.photo[-1].file_id
+
+    await state.update_data(
+        photo=photo
+    )
+
+    await message.answer(
+        "📢 Forward or send the post."
+    )
+
+    await state.set_state(
+        PanelState.waiting_schedule_post
+    )
+
+@router.message(PanelState.waiting_schedule_post)
+async def get_schedule_post(
+    message: Message,
+    state: FSMContext
+):
+    await state.update_data(
+        post_chat_id=message.chat.id,
+        post_message_id=message.message_id
+    )
+
+    builder = InlineKeyboardBuilder()
+
+    today = datetime.now()
+
+    for i in range(0, 31):
+        date = today + timedelta(days=i)
+
+        builder.button(
+            text=date.strftime("%d %b"),
+            callback_data=f"auto_date_{date.strftime('%Y-%m-%d')}"
+        )
+
+    builder.adjust(2)
+
+    await message.answer(
+        "📅 Select date.",
+        reply_markup=builder.as_markup()
+    )
+
+    await state.set_state(
+        PanelState.waiting_date
+    )
+    
+# 👇 YAHAN PASTE KARO
+@router.message(PanelState.waiting_schedule_name)
+async def get_schedule_name(
+    message: Message,
+    state: FSMContext
+):
+    await state.update_data(
+        name=message.text.strip()
+    )
+
+    await message.answer(
+        "🔗 Send new username."
+    )
+
+    await state.set_state(
+        PanelState.waiting_schedule_username
+    )
+
+# 👇 Ye purana code abhi wahi rahega
+@router.message(PanelState.waiting_action)
+async def get_action(
+    message: Message,
+    state: FSMContext
+):
+    ...
+
 
 @router.message(PanelState.waiting_value)
 async def get_value(
