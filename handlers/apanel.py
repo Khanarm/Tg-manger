@@ -44,7 +44,7 @@ async def apanel(message: Message):
 
     await message.answer(
         "📋 Select Channel for Automation",
-        reply_markup=panel_channels_keyboard(channels)
+        reply_markup=apanel_channels_keyboard(channels)
     )
 
 
