@@ -259,3 +259,44 @@ async def panel_post(callback: CallbackQuery, state: FSMContext):
     )
 
     await callback.answer()
+
+@router.message(PanelState.waiting_post, F.text)
+async def receive_text_post(message: Message, state: FSMContext):
+
+    data = await state.get_data()
+    channel_id = data["channel_id"]
+
+    success, result = await send_channel_post(
+        channel_id=channel_id,
+        text=message.text,
+    )
+
+    if success:
+
+        await message.answer(
+            "✅ Post published successfully."
+        )
+
+        info = await get_channel_info(channel_id)
+
+        username = (
+            f"@{info['username']}"
+            if info["username"]
+            else "No Username"
+        )
+
+        await message.answer(
+            f"⚙️ <b>Edit Menu</b>\n\n"
+            f"📢 {info['title']}\n"
+            f"👤 {username}",
+            parse_mode="HTML",
+            reply_markup=edit_menu_keyboard(channel_id)
+        )
+
+        await state.clear()
+
+    else:
+
+        await message.answer(
+            f"❌ Failed to publish post.\n\n{result}"
+    )
