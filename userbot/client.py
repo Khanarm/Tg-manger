@@ -212,6 +212,8 @@ async def update_channel_username(channel_id: int, new_username: str):
         print("Username Error:", e)
         return False, str(e)
 
+async def update_channel_username_auto(...)
+
 
 async def update_channel_photo(channel_id: int, photo_path: str):
 
