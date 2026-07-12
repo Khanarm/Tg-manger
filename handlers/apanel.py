@@ -285,6 +285,16 @@ async def select_time(
 
     data = await state.get_data()
 
+    print(data)
+
+    if "date" not in data:
+        await callback.answer(
+            "❌ Session expired. Please start again.",
+            show_alert=True
+        )
+        await state.clear()
+        return
+
     run_at = datetime.strptime(
         f"{data['date']} {time}",
         "%Y-%m-%d %H:%M"
