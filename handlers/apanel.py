@@ -10,13 +10,9 @@ from config import OWNER_ID
 
 from userbot.client import get_all_channels
 
-from database.scheduled import create_task
+from keyboards.panel import apanel_channels_keyboard
 
 from states.panel import PanelState
-
-from datetime import datetime
-
-from keyboards.panel import apanel_channels_keyboard
 
 
 router = Router()
@@ -31,9 +27,7 @@ async def apanel(message: Message):
         )
         return
 
-
     channels = await get_all_channels()
-
 
     if not channels:
         await message.answer(
@@ -41,12 +35,10 @@ async def apanel(message: Message):
         )
         return
 
-
     await message.answer(
         "📋 Select Channel for Automation",
         reply_markup=apanel_channels_keyboard(channels)
     )
-
 
 
 @router.callback_query(
@@ -61,71 +53,39 @@ async def auto_select_channel(
         callback.data.split("_")[2]
     )
 
+    await state.clear()
 
     await state.update_data(
         channel_id=channel_id
     )
 
-
     await callback.message.answer(
         "📝 Send new channel name."
     )
 
-
     await state.set_state(
-        PanelState.waiting_action
+        PanelState.waiting_schedule_name
     )
-
 
     await callback.answer()
 
-@router.message(PanelState.waiting_action)
-async def get_action(
+@router.message(PanelState.waiting_schedule_name)
+async def get_schedule_name(
     message: Message,
     state: FSMContext
 ):
-
-    action = message.text.lower().strip()
-
-    if action not in [
-        "name",
-        "username",
-        "photo",
-        "post"
-    ]:
-        await message.answer(
-            "❌ Invalid action\n\n"
-            "Use:\n"
-            "name\n"
-            "username\n"
-            "photo\n"
-            "post"
-        )
-        return
-
-
     await state.update_data(
-        action=action
+        name=message.text.strip()
     )
-
 
     await message.answer(
-        "📝 Ab value bhejo.\n\n"
-        "Example:\n"
-        "Movie Hub\n"
-        "moviehub\n"
-        "photo path"
+        "🔗 Send new username."
     )
-
 
     await state.set_state(
-        PanelState.waiting_value
+        PanelState.waiting_schedule_username
     )
-@router.callback_query(
-    F.data.startswith("apanel_channel_")
-)
-async def auto_select_channel(...):
-    ...
+
 
 @router.message(PanelState.waiting_schedule_username)
 async def get_schedule_username(
@@ -146,6 +106,7 @@ async def get_schedule_username(
         PanelState.waiting_schedule_photo
     )
 
+
 @router.message(PanelState.waiting_schedule_photo)
 async def get_schedule_photo(
     message: Message,
@@ -157,10 +118,8 @@ async def get_schedule_photo(
         )
         return
 
-    photo = message.photo[-1].file_id
-
     await state.update_data(
-        photo=photo
+        photo=message.photo[-1].file_id
     )
 
     await message.answer(
@@ -170,6 +129,7 @@ async def get_schedule_photo(
     await state.set_state(
         PanelState.waiting_schedule_post
     )
+
 
 @router.message(PanelState.waiting_schedule_post)
 async def get_schedule_post(
@@ -185,67 +145,7 @@ async def get_schedule_post(
 
     today = datetime.now()
 
-    for i in range(0, 31):
-        date = today + timedelta(days=i)
-
-        builder.button(
-            text=date.strftime("%d %b"),
-            callback_data=f"auto_date_{date.strftime('%Y-%m-%d')}"
-        )
-
-    builder.adjust(2)
-
-    await message.answer(
-        "📅 Select date.",
-        reply_markup=builder.as_markup()
-    )
-
-    await state.set_state(
-        PanelState.waiting_date
-    )
-    
-# 👇 YAHAN PASTE KARO
-@router.message(PanelState.waiting_schedule_name)
-async def get_schedule_name(
-    message: Message,
-    state: FSMContext
-):
-    await state.update_data(
-        name=message.text.strip()
-    )
-
-    await message.answer(
-        "🔗 Send new username."
-    )
-
-    await state.set_state(
-        PanelState.waiting_schedule_username
-    )
-
-# 👇 Ye purana code abhi wahi rahega
-@router.message(PanelState.waiting_action)
-async def get_action(
-    message: Message,
-    state: FSMContext
-):
-    ...
-
-
-@router.message(PanelState.waiting_value)
-async def get_value(
-    message: Message,
-    state: FSMContext
-):
-
-    await state.update_data(
-        value=message.text
-    )
-
-    builder = InlineKeyboardBuilder()
-
-    today = datetime.now()
-
-    for i in range(1, 8):
+    for i in range(31):
         date = today + timedelta(days=i)
 
         builder.button(
@@ -260,10 +160,9 @@ async def get_value(
         reply_markup=builder.as_markup()
     )
 
-
     await state.set_state(
         PanelState.waiting_date
-)
+    )
 
 @router.callback_query(
     F.data.startswith("auto_date_")
@@ -282,7 +181,6 @@ async def select_date(
         date=date
     )
 
-
     builder = InlineKeyboardBuilder()
 
     times = [
@@ -294,23 +192,18 @@ async def select_date(
         "21:00"
     ]
 
-
     for t in times:
-
         builder.button(
             text=t,
             callback_data=f"auto_time_{t}"
         )
 
-
     builder.adjust(3)
-
 
     await callback.message.edit_text(
         "⏰ Select Time",
         reply_markup=builder.as_markup()
     )
-
 
     await state.set_state(
         PanelState.waiting_time
@@ -325,39 +218,39 @@ async def select_time(
     callback: CallbackQuery,
     state: FSMContext
 ):
-
     time = callback.data.replace(
         "auto_time_",
         ""
     )
 
-
     data = await state.get_data()
-
 
     run_at = datetime.strptime(
         f"{data['date']} {time}",
         "%Y-%m-%d %H:%M"
     )
 
-
     await create_task(
         channel_id=data["channel_id"],
-        action=data["action"],
         data={
-            data["action"]: data["value"]
+            "name": data["name"],
+            "username": data["username"],
+            "photo": data["photo"],
+            "post_chat_id": data["post_chat_id"],
+            "post_message_id": data["post_message_id"],
         },
         run_at=run_at
     )
 
-
     await callback.message.edit_text(
-        "✅ Scheduled successfully.\n\n"
-        f"📅 {run_at.strftime('%d %b %Y')}\n"
-        f"⏰ {time}"
+        "✅ Automation Scheduled Successfully!\n\n"
+        f"📝 Name: {data['name']}\n"
+        f"🔗 Username: @{data['username']}\n"
+        f"🖼 Photo: ✅\n"
+        f"📢 Post: ✅\n\n"
+        f"📅 Date: {run_at.strftime('%d %b %Y')}\n"
+        f"🕒 Time: {time}"
     )
 
-
     await state.clear()
-
     await callback.answer()
