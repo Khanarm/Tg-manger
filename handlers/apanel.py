@@ -16,7 +16,7 @@ from states.panel import PanelState
 
 from datetime import datetime
 
-from keyboards.panel import panel_channels_keyboard
+from keyboards.panel import apanel_channels_keyboard
 
 
 router = Router()
