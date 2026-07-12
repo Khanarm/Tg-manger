@@ -12,3 +12,4 @@ class PanelState(StatesGroup):
     waiting_value = State()
     waiting_date = State()
     waiting_time = State()
+    waiting_post = State()
