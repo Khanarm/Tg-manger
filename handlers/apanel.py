@@ -194,7 +194,7 @@ async def select_date(
     builder = InlineKeyboardBuilder()
 
     times = [
-        "16:45",
+        "23:25",
         "20:55",
         "20:57",
         "20:59",
@@ -249,6 +249,8 @@ async def select_time(
         f"{data['date']} {time}",
         "%Y-%m-%d %H:%M"
     )
+    
+    run_at = run_at - timedelta(hours=5, minutes=30)
 
     await create_task(
     channel_id=data["channel_id"],
