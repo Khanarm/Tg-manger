@@ -118,29 +118,14 @@ async def get_schedule_photo(
     message: Message,
     state: FSMContext
 ):
-    if not message.photo:
+    if not message.text:
         await message.answer(
-            "❌ Please send a photo."
+            "❌ Please send a valid storage channel post link."
         )
         return
 
-    import os
-
-    os.makedirs("temp", exist_ok=True)
-
-    photo = message.photo[-1]
-
-    file = await message.bot.get_file(photo.file_id)
-
-    photo_path = f"temp/channel_{message.from_user.id}.jpg"
-
-    await message.bot.download_file(
-        file.file_path,
-        destination=photo_path
-    )
-
     await state.update_data(
-        photo_path=photo_path
+        photo_link=message.text.strip()
     )
 
     await message.answer(
