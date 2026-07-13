@@ -105,7 +105,7 @@ async def get_schedule_username(
     )
 
     await message.answer(
-        "🖼 Send new channel photo."
+        "🖼 Send storage channel profile photo post link."
     )
 
     await state.set_state(
@@ -141,48 +141,15 @@ async def get_schedule_post(
     message: Message,
     state: FSMContext
 ):
-    import os
-
-    os.makedirs("temp", exist_ok=True)
-
-    post_data = {}
-
-    # Photo + caption
-    if message.photo:
-
-        photo = message.photo[-1]
-
-        file = await message.bot.get_file(
-            photo.file_id
-        )
-
-        photo_path = f"temp/post_{message.from_user.id}.jpg"
-
-        await message.bot.download_file(
-            file.file_path,
-            destination=photo_path
-        )
-
-        post_data["file_path"] = photo_path
-        post_data["text"] = message.caption or ""
-
-    # Only text
-    elif message.text:
-
-        post_data["file_path"] = None
-        post_data["text"] = message.text
-
-    else:
+    if not message.text:
         await message.answer(
-            "❌ Only text or photo post allowed."
+            "❌ Please send a valid storage channel post link."
         )
         return
 
-
     await state.update_data(
-        post=post_data
+        post_link=message.text.strip()
     )
-
 
     builder = InlineKeyboardBuilder()
 
@@ -198,12 +165,10 @@ async def get_schedule_post(
 
     builder.adjust(2)
 
-
     await message.answer(
         "📅 Select Date",
         reply_markup=builder.as_markup()
     )
-
 
     await state.set_state(
         PanelState.waiting_date
@@ -290,8 +255,8 @@ async def select_time(
     data={
         "name": data["name"],
         "username": data["username"],
-        "photo_path": data["photo_path"],
-        "post": data["post"],
+        "photo_link": data["photo_link"],
+        "post_link": data["post_link"],
     },
     run_at=run_at
     )
