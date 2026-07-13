@@ -23,7 +23,7 @@ async def execute_task(task):
 
         channel_id = task["channel_id"]
         data = task["data"]
-        action = data["action"]
+        action = data["update_channel"]
 
         if action == "rename":
 
