@@ -107,11 +107,12 @@ async def task_scheduler():
 
         await asyncio.sleep(30)
 
-print("Current UTC:", now)
+print("Current Time:", now)
 
 for task in tasks:
-    print("Task Time:", task["run_at"])
+
+    print(task)
 
     if task["run_at"] <= now:
-        print("RUNNING TASK:", task["_id"])
+        print("RUNNING")
         await execute_task(task)
