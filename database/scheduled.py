@@ -34,14 +34,20 @@ async def get_pending_tasks():
 
     tasks = []
 
+    now = datetime.utcnow()
+
     async for task in scheduled_tasks.find(
         {
-            "status": "pending"
+            "status": "pending",
+            "run_at": {
+                "$lte": now
+            }
         }
     ):
         tasks.append(task)
 
     return tasks
+
 
 
 
