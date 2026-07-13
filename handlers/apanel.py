@@ -155,7 +155,7 @@ async def get_schedule_post(
 
     today = datetime.now()
 
-    for i in range(1, 31):
+    for i in range(0, 31):
         date = today + timedelta(days=i)
 
         builder.button(
@@ -194,12 +194,12 @@ async def select_date(
     builder = InlineKeyboardBuilder()
 
     times = [
-        "09:00",
-        "10:00",
-        "12:00",
-        "15:00",
-        "18:00",
-        "21:00"
+        "11:05",
+        "11:10",
+        "11:15",
+        "11:20",
+        "11:30",
+        "11:35"
     ]
 
     for t in times:
