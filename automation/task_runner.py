@@ -10,8 +10,8 @@ from database.scheduled import (
 from userbot.client import (
     rename_channel,
     update_channel_username_auto,
-    update_channel_photo,
-    send_channel_post,
+    update_channel_photo_from_link,
+    send_channel_post_from_link,
 )
 
 
@@ -25,14 +25,13 @@ async def execute_task(task):
         action = task["action"]
         data = task["data"]
 
-
         if action == "rename":
 
             success = await rename_channel(
                 channel_id,
                 data["name"]
             )
-
+            result = "Success"
 
         elif action == "username":
 
@@ -41,32 +40,26 @@ async def execute_task(task):
                 data["username"]
             )
 
-
         elif action == "photo":
 
-            success, result = await update_channel_photo(
+            success, result = await update_channel_photo_from_link(
                 channel_id,
-                data["file_path"]
+                data["photo_link"]
             )
-
 
         elif action == "post":
 
-            success, result = await send_channel_post(
+            success, result = await send_channel_post_from_link(
                 channel_id,
-                text=data.get("text"),
-                file_path=data.get("file_path")
+                data["post_link"]
             )
-
 
         else:
 
-            raise Exception(
-                "Unknown action"
-            )
-
+            raise Exception("Unknown action")
 
         if success:
+
             await mark_completed(task_id)
 
             print(
@@ -80,27 +73,19 @@ async def execute_task(task):
                 result
             )
 
-
     except Exception as e:
 
-        print(
-            "Task Error:",
-            e
-        )
+        print("Task Error:", e)
 
         await mark_failed(
             task_id,
-            e
+            str(e)
         )
-
 
 
 async def task_scheduler():
 
-    print(
-        "⏰ Task Scheduler Started"
-    )
-
+    print("⏰ Task Scheduler Started")
 
     while True:
 
@@ -110,22 +95,14 @@ async def task_scheduler():
 
             now = datetime.utcnow()
 
-
             for task in tasks:
 
                 if task["run_at"] <= now:
 
-                    await execute_task(
-                        task
-                    )
-
+                    await execute_task(task)
 
         except Exception as e:
 
-            print(
-                "Scheduler Error:",
-                e
-            )
-
+            print("Scheduler Error:", e)
 
         await asyncio.sleep(30)
