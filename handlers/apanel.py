@@ -253,6 +253,7 @@ async def select_time(
     await create_task(
     channel_id=data["channel_id"],
     data={
+        "action": "update_channel",
         "name": data["name"],
         "username": data["username"],
         "photo_link": data["photo_link"],
