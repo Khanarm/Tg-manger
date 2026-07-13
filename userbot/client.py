@@ -476,12 +476,31 @@ async def send_channel_post_from_link(
         if not message:
             return False, "Post not found"
 
-        await client.forward_messages(
-            entity,
-            message
-        )
+        # Photo / Video / Document
+        if message.media:
 
-        return True, "Post sent successfully"
+            file_path = await client.download_media(
+                message,
+                file="temp/"
+            )
+
+            await client.send_file(
+                entity,
+                file=file_path,
+                caption=message.text or ""
+            )
+
+            if file_path and os.path.exists(file_path):
+                os.remove(file_path)
+
+        else:
+
+            await client.send_message(
+                entity,
+                message.text or ""
+            )
+
+        return True, "Post copied successfully"
 
     except Exception as e:
         print("Post Link Error:", e)
