@@ -95,7 +95,12 @@ async def task_scheduler():
 
             now = datetime.utcnow()
 
+            print("PENDING TASK COUNT:", len(tasks))
+            print("CURRENT TIME:", now)
+
             for task in tasks:
+
+                print("TASK TIME:", task["run_at"])
 
                 if task["run_at"] <= now:
 
