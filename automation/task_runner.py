@@ -22,8 +22,8 @@ async def execute_task(task):
     try:
 
         channel_id = task["channel_id"]
-        action = task["action"]
         data = task["data"]
+        action = data["action"]
 
         if action == "rename":
 
@@ -54,33 +54,50 @@ async def execute_task(task):
                 data["post_link"]
             )
 
+        elif action == "update_channel":
+
+            success = await rename_channel(
+                channel_id,
+                data["name"]
+            )
+            result = "Success"
+
+            if success and data.get("username"):
+                success, result = await update_channel_username_auto(
+                    channel_id,
+                    data["username"]
+                )
+
+            if success and data.get("photo_link"):
+                success, result = await update_channel_photo_from_link(
+                    channel_id,
+                    data["photo_link"]
+                )
+
+            if success and data.get("post_link"):
+                success, result = await send_channel_post_from_link(
+                    channel_id,
+                    data["post_link"]
+                )
+
         else:
 
-            raise Exception("Unknown action")
+            raise Exception(f"Unknown action: {action}")
 
         if success:
 
             await mark_completed(task_id)
-
-            print(
-                f"✅ Task completed {task_id}"
-            )
+            print(f"✅ Task completed {task_id}")
 
         else:
 
-            await mark_failed(
-                task_id,
-                result
-            )
+            await mark_failed(task_id, result)
 
     except Exception as e:
 
         print("Task Error:", e)
 
-        await mark_failed(
-            task_id,
-            str(e)
-        )
+        await mark_failed(task_id, str(e))
 
 
 async def task_scheduler():
