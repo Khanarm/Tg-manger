@@ -13,6 +13,7 @@ class PanelState(StatesGroup):
     waiting_schedule_username = State()
     waiting_schedule_photo = State()
     waiting_schedule_post = State()
+    waiting_post_link = State()
 
     waiting_date = State()
     waiting_time = State()
