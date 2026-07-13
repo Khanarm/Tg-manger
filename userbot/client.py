@@ -1,3 +1,19 @@
+import re
+
+def parse_post_link(link: str):
+    match = re.search(
+        r"https://t\.me/([^/]+)/(\d+)",
+        link
+    )
+
+    if not match:
+        return None, None
+
+    username = match.group(1)
+    message_id = int(match.group(2))
+
+    return username, message_id
+    
 import os
 from telethon import TelegramClient
 from telethon.sessions import StringSession
