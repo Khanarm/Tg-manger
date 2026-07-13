@@ -382,3 +382,107 @@ def parse_post_link(link: str):
     message_id = int(match.group(2))
 
     return username, message_id
+
+async def update_channel_photo_from_link(
+    channel_id: int,
+    post_link: str,
+):
+
+    client = CHANNEL_CLIENTS.get(channel_id)
+    entity = CHANNELS.get(channel_id)
+
+    if client is None or entity is None:
+        return False, "Channel not found"
+
+    try:
+
+        username, message_id = parse_post_link(post_link)
+
+        if not username:
+            return False, "Invalid post link"
+
+        source = await client.get_entity(username)
+
+        message = await client.get_messages(
+            source,
+            ids=message_id
+        )
+
+        if not message:
+            return False, "Post not found"
+
+        if not message.photo:
+            return False, "Post has no photo"
+
+        file_path = await client.download_media(
+            message.photo,
+            file="temp/profile_photo.jpg"
+        )
+
+        uploaded = await client.upload_file(file_path)
+
+        await client(
+            EditPhotoRequest(
+                channel=entity,
+                photo=InputChatUploadedPhoto(uploaded)
+            )
+        )
+
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        async for msg in client.iter_messages(entity, limit=5):
+            if msg.action:
+                try:
+                    await client.delete_messages(
+                        entity,
+                        [msg.id],
+                        revoke=True
+                    )
+                except:
+                    pass
+
+        return True, "Photo updated successfully"
+
+    except Exception as e:
+        print("Photo Link Error:", e)
+        return False, str(e)
+
+async def send_channel_post_from_link(
+    channel_id: int,
+    post_link: str,
+):
+
+    client = CHANNEL_CLIENTS.get(channel_id)
+    entity = CHANNELS.get(channel_id)
+
+    if client is None or entity is None:
+        return False, "Channel not found"
+
+    try:
+
+        username, message_id = parse_post_link(post_link)
+
+        if not username:
+            return False, "Invalid post link"
+
+        source = await client.get_entity(username)
+
+        message = await client.get_messages(
+            source,
+            ids=message_id
+        )
+
+        if not message:
+            return False, "Post not found"
+
+        await client.forward_messages(
+            entity,
+            message
+        )
+
+        return True, "Post sent successfully"
+
+    except Exception as e:
+        print("Post Link Error:", e)
+        return False, str(e)
