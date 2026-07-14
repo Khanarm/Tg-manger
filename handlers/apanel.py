@@ -226,6 +226,7 @@ async def select_date(
 @router.callback_query(
     F.data.startswith("auto_time_")
 )
+
 async def select_time(
     callback: CallbackQuery,
     state: FSMContext
@@ -251,42 +252,37 @@ async def select_time(
         f"{data['date']} {time}",
         "%Y-%m-%d %H:%M"
     )
-    
+
     run_at = run_at - timedelta(hours=5, minutes=30)
 
     task_id = await create_task(
-    channel_id=data["channel_id"],
-    data={
-        "action": "update_channel",
-        "name": data["name"],
-        "username": data["username"],
-        "photo_link": data["photo_link"],
-        "post_link": data["post_link"],
-    },
-    run_at=run_at
+        channel_id=data["channel_id"],
+        data={
+            "action": "update_channel",
+            "name": data["name"],
+            "username": data["username"],
+            "photo_link": data["photo_link"],
+            "post_link": data["post_link"],
+        },
+        run_at=run_at
     )
 
     text = (
-    "🆕 <b>New Scheduled Task</b>\n\n"
-    f"🆔 Task ID: <code>{task_id}</code>\n"
-    f"📢 Channel ID: <code>{data['channel_id']}</code>\n"
-    f"⚙️ Action: update_channel\n"
-    f"📝 Name: {data['name']}\n"
-    f"👤 Username: @{data['username']}\n"
-    f"⏰ Run At: {run_at.strftime('%d %b %Y %H:%M UTC')}\n"
-    f"📌 Status: Pending"
-)
-
-await bot.send_message(
-    chat_id=LOG_CHANNEL_ID,
-    text=text,
-    parse_mode="HTML"
+        "🆕 <b>New Scheduled Task</b>\n\n"
+        f"🆔 Task ID: <code>{task_id}</code>\n"
+        f"📢 Channel ID: <code>{data['channel_id']}</code>\n"
+        f"⚙️ Action: update_channel\n"
+        f"📝 Name: {data['name']}\n"
+        f"👤 Username: @{data['username']}\n"
+        f"⏰ Run At: {run_at.strftime('%d %b %Y %H:%M UTC')}\n"
+        f"📌 Status: Pending"
     )
 
-msg = await bot.send_message(
-    chat_id=LOG_CHANNEL_ID,
-    text=text
-)
+    await bot.send_message(
+        chat_id=LOG_CHANNEL_ID,
+        text=text,
+        parse_mode="HTML"
+    )
 
     await callback.message.edit_text(
         "✅ Automation Scheduled Successfully!\n\n"
