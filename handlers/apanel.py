@@ -199,7 +199,7 @@ async def select_date(
     builder = InlineKeyboardBuilder()
 
     times = [
-        "15:15",
+        "16:00",
         "20:55",
         "20:57",
         "20:59",
