@@ -5,6 +5,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from datetime import datetime, timedelta
 from database.scheduled import create_task
+from loader import bot
+from config import LOG_CHANNEL_ID
 
 from config import OWNER_ID
 
@@ -252,7 +254,7 @@ async def select_time(
     
     run_at = run_at - timedelta(hours=5, minutes=30)
 
-    await create_task(
+    task_id = await create_task(
     channel_id=data["channel_id"],
     data={
         "action": "update_channel",
