@@ -19,14 +19,7 @@ from database.mongo import db
 from userbot.client import start_userbots
 
 from automation.task_runner import task_scheduler
-
-
-bot = Bot(BOT_TOKEN)
-
-storage = MemoryStorage()
-
-dp = Dispatcher(storage=storage)
-
+from loader import bot, dp
 
 # Routers
 dp.include_router(start_router)
