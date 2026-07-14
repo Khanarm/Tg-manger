@@ -23,6 +23,7 @@ async def create_task(
             "created_at": datetime.utcnow(),
             "completed_at": None,
             "error": None,
+            "log_message_id": None,
         }
     )
 
@@ -113,5 +114,21 @@ async def delete_task(
     await scheduled_tasks.delete_one(
         {
             "_id": ObjectId(task_id)
+        }
+    )
+
+async def update_log_message_id(
+    task_id,
+    message_id
+):
+
+    await scheduled_tasks.update_one(
+        {
+            "_id": ObjectId(task_id)
+        },
+        {
+            "$set": {
+                "log_message_id": message_id
+            }
         }
     )
