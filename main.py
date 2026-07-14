@@ -5,6 +5,8 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 from config import BOT_TOKEN
 
+from loader import bot
+from config import LOG_CHANNEL_ID
 from handlers.start import router as start_router
 from handlers.setname import router as setname_router
 from handlers.setphoto import router as setphoto_router
