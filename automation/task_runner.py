@@ -1,3 +1,7 @@
+from loader import bot
+from config import LOG_CHANNEL_ID
+from database.scheduled import update_log_message_id
+
 import asyncio
 from datetime import datetime
 
