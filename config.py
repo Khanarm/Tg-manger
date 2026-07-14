@@ -19,3 +19,5 @@ MONGO_URI = os.getenv("MONGO_URI")
 print("MONGO_URI =", repr(MONGO_URI))
 
 DATABASE_NAME = "channel_manager"
+
+LOG_CHANNEL_ID = int(os.getenv("LOG_CHANNEL_ID"))
