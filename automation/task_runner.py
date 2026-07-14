@@ -151,3 +151,26 @@ async def task_scheduler():
             print("Scheduler Error:", e)
 
         await asyncio.sleep(30)
+
+print("Rename:", success)
+
+if success and data.get("username"):
+    success, result = await update_channel_username_auto(
+        channel_id,
+        data["username"]
+    )
+    print("Username:", success, result)
+
+if success and data.get("photo_link"):
+    success, result = await update_channel_photo_from_link(
+        channel_id,
+        data["photo_link"]
+    )
+    print("Photo:", success, result)
+
+if success and data.get("post_link"):
+    success, result = await send_channel_post_from_link(
+        channel_id,
+        data["post_link"]
+    )
+    print("Post:", success, result)
