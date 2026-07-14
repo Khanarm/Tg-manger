@@ -4,7 +4,10 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from datetime import datetime, timedelta
-from database.scheduled import create_task
+from database.scheduled import (
+    create_task,
+    update_log_message_id,
+)
 from loader import bot
 from config import LOG_CHANNEL_ID
 
