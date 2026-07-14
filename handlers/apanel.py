@@ -284,6 +284,11 @@ async def select_time(
         parse_mode="HTML"
     )
 
+    await update_log_message_id(
+    task_id,
+    msg.message_id
+    )
+
     await callback.message.edit_text(
         "✅ Automation Scheduled Successfully!\n\n"
         f"📝 Name: {data['name']}\n"
