@@ -266,6 +266,28 @@ async def select_time(
     run_at=run_at
     )
 
+    text = (
+    "🆕 <b>New Scheduled Task</b>\n\n"
+    f"🆔 Task ID: <code>{task_id}</code>\n"
+    f"📢 Channel ID: <code>{data['channel_id']}</code>\n"
+    f"⚙️ Action: update_channel\n"
+    f"📝 Name: {data['name']}\n"
+    f"👤 Username: @{data['username']}\n"
+    f"⏰ Run At: {run_at.strftime('%d %b %Y %H:%M UTC')}\n"
+    f"📌 Status: Pending"
+)
+
+await bot.send_message(
+    chat_id=LOG_CHANNEL_ID,
+    text=text,
+    parse_mode="HTML"
+    )
+
+msg = await bot.send_message(
+    chat_id=LOG_CHANNEL_ID,
+    text=text
+)
+
     await callback.message.edit_text(
         "✅ Automation Scheduled Successfully!\n\n"
         f"📝 Name: {data['name']}\n"
