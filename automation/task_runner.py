@@ -1,6 +1,5 @@
 from loader import bot
 from config import LOG_CHANNEL_ID
-from database.scheduled import update_log_message_id
 
 import asyncio
 from datetime import datetime
@@ -90,33 +89,33 @@ async def execute_task(task):
 
         if success:
 
-    await mark_completed(task_id)
+            await mark_completed(task_id)
 
-    if task.get("log_message_id"):
+            if task.get("log_message_id"):
 
-        text = (
-            "✅ <b>Task Completed</b>\n\n"
-            f"🆔 Task ID: <code>{task_id}</code>\n"
-            f"📢 Channel ID: <code>{channel_id}</code>\n"
-            f"⚙️ Action: {action}\n"
-            f"📝 Name: {data.get('name', '-')}\n"
-            f"👤 Username: @{data.get('username', '-')}\n"
-            f"📌 Status: Completed"
-        )
+                text = (
+                    "✅ <b>Task Completed</b>\n\n"
+                    f"🆔 Task ID: <code>{task_id}</code>\n"
+                    f"📢 Channel ID: <code>{channel_id}</code>\n"
+                    f"⚙️ Action: {action}\n"
+                    f"📝 Name: {data.get('name', '-')}\n"
+                    f"👤 Username: @{data.get('username', '-')}\n"
+                    f"📌 Status: Completed"
+                )
 
-        await bot.edit_message_text(
-            chat_id=LOG_CHANNEL_ID,
-            message_id=task["log_message_id"],
-            text=text,
-            parse_mode="HTML"
-        )
+                await bot.edit_message_text(
+                    chat_id=LOG_CHANNEL_ID,
+                    message_id=task["log_message_id"],
+                    text=text,
+                    parse_mode="HTML"
+                )
 
-    print(f"✅ Task completed {task_id}")
+            print(f"✅ Task completed {task_id}")
 
-else:
+        else:
 
-    await mark_failed(task_id, result)
-    
+            await mark_failed(task_id, result)
+
     except Exception as e:
 
         print("Task Error:", e)
