@@ -90,13 +90,33 @@ async def execute_task(task):
 
         if success:
 
-            await mark_completed(task_id)
-            print(f"✅ Task completed {task_id}")
+    await mark_completed(task_id)
 
-        else:
+    if task.get("log_message_id"):
 
-            await mark_failed(task_id, result)
+        text = (
+            "✅ <b>Task Completed</b>\n\n"
+            f"🆔 Task ID: <code>{task_id}</code>\n"
+            f"📢 Channel ID: <code>{channel_id}</code>\n"
+            f"⚙️ Action: {action}\n"
+            f"📝 Name: {data.get('name', '-')}\n"
+            f"👤 Username: @{data.get('username', '-')}\n"
+            f"📌 Status: Completed"
+        )
 
+        await bot.edit_message_text(
+            chat_id=LOG_CHANNEL_ID,
+            message_id=task["log_message_id"],
+            text=text,
+            parse_mode="HTML"
+        )
+
+    print(f"✅ Task completed {task_id}")
+
+else:
+
+    await mark_failed(task_id, result)
+    
     except Exception as e:
 
         print("Task Error:", e)
