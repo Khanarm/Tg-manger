@@ -282,7 +282,7 @@ async def select_time(
         f"📌 Status: Pending"
     )
 
-    await bot.send_message(
+   mesg = await bot.send_message(
         chat_id=LOG_CHANNEL_ID,
         text=text,
         parse_mode="HTML"
