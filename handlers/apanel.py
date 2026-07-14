@@ -226,11 +226,12 @@ async def select_date(
 @router.callback_query(
     F.data.startswith("auto_time_")
 )
-
 async def select_time(
     callback: CallbackQuery,
     state: FSMContext
 ):
+    print("TIME CLICKED:", callback.data)
+
     time = callback.data.replace(
         "auto_time_",
         ""
