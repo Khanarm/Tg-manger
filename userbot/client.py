@@ -213,6 +213,12 @@ async def update_channel_username(channel_id: int, new_username: str):
         return False, str(e)
 
 
+from telethon.errors import (
+    UsernameOccupiedError,
+    UsernameInvalidError,
+)
+
+
 async def update_channel_username_auto(
     channel_id: int,
     username: str
@@ -224,22 +230,18 @@ async def update_channel_username_auto(
     if client is None or entity is None:
         return False, "Channel not found"
 
-    base_username = (
-        username
-        .replace("@", "")
-        .strip()
-    )
+    base_username = username.replace("@", "").strip()
 
-    for i in range(0, 101):
+    for i in range(101):
 
-        if i == 0:
-            new_username = base_username
-        else:
-            new_username = f"{base_username}{i}"
+        new_username = (
+            base_username if i == 0
+            else f"{base_username}{i}"
+        )
 
         try:
 
-            print("Trying:", new_username)
+            print(f"Trying username: {new_username}")
 
             await client(
                 UpdateUsernameRequest(
@@ -250,41 +252,25 @@ async def update_channel_username_auto(
 
             entity.username = new_username
 
-            return True, (
-                f"Username updated: @{new_username}"
-            )
+            print(f"✅ Username Updated: {new_username}")
+
+            return True, f"Username updated: @{new_username}"
+
+        except UsernameOccupiedError:
+
+            print(f"❌ {new_username} already taken")
+            continue
+
+        except UsernameInvalidError:
+
+            return False, "Invalid username format"
 
         except Exception as e:
 
-            import traceback
-            traceback.print_exc()
+            print("Auto Username Error:", repr(e))
+            return False, str(e)
 
-            error = str(e)
-            print("FULL ERROR:", repr(e))
-
-            if "USERNAME_OCCUPIED" in error:
-
-                print(f"❌ {new_username} taken")
-                continue
-
-            elif "USERNAME_INVALID" in error:
-
-                return False, (
-                    "Invalid username format"
-                )
-
-            else:
-
-                print(
-                    "Auto Username Error:",
-                    error
-                )
-
-                return False, error
-
-    return False, (
-        "No available username found"
-    )
+    return False, "No available username found (1-100)"
     
 async def update_channel_photo(channel_id: int, photo_path: str):
 
