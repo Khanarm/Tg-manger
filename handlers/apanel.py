@@ -281,7 +281,7 @@ async def select_time(
         f"⚙️ Action: update_channel\n"
         f"📝 Name: {data['name']}\n"
         f"👤 Username: @{data['username']}\n"
-        f"⏰ Run At: {run_at.strftime('%d %b %Y %H:%M UTC')}\n"
+        f"⏰ Run At: {ist_time.strftime('%d %b %Y %I:%M %p IST')}\n"
         f"📌 Status: Pending"
     )
 
@@ -302,8 +302,8 @@ async def select_time(
         f"🔗 Username: @{data['username']}\n"
         f"🖼 Photo: ✅\n"
         f"📢 Post: ✅\n\n"
-        f"📅 Date: {run_at.strftime('%d %b %Y')}\n"
-        f"🕒 Time: {time}"
+        f"📅 Date: {ist_time.strftime('%d %b %Y')}\n"
+        f"🕒 Time: {ist_time.strftime('%I:%M %p IST')}"
     )
 
     await state.clear()
