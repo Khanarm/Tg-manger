@@ -8,24 +8,22 @@ from bson import ObjectId
 scheduled_tasks = db.scheduled_tasks
 
 
-async def create_task(
-    channel_id: int,
-    data: dict,
-    run_at: datetime,
-):
+async def create_task(channel_id, data, run_at):
 
-    result = await scheduled_tasks.insert_one(
-        {
-            "channel_id": channel_id,
-            "data": data,
-            "run_at": run_at,
-            "status": "pending",
-            "created_at": datetime.utcnow(),
-            "completed_at": None,
-            "error": None,
-            "log_message_id": None,
-        }
-    )
+    print("CREATE_TASK START")
+
+    result = await scheduled_tasks.insert_one({
+        "channel_id": channel_id,
+        "data": data,
+        "run_at": run_at,
+        "status": "pending",
+        "created_at": datetime.utcnow(),
+        "completed_at": None,
+        "error": None,
+        "log_message_id": None,
+    })
+
+    print("INSERTED ID:", result.inserted_id)
 
     return str(result.inserted_id)
 
