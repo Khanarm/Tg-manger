@@ -229,6 +229,7 @@ async def select_date(
 @router.callback_query(
     F.data.startswith("auto_time_")
 )
+
 async def select_time(
     callback: CallbackQuery,
     state: FSMContext
@@ -252,13 +253,15 @@ async def select_time(
         await state.clear()
         return
 
-    run_at = datetime.strptime(
+    # Admin ne jo time select kiya (IST)
+    ist_time = datetime.strptime(
         f"{data['date']} {time}",
         "%Y-%m-%d %H:%M"
     )
 
-    run_at = run_at - timedelta(hours=5, minutes=30)
-
+    # MongoDB me UTC save hoga
+    run_at = ist_time - timedelta(hours=5, minutes=30)
+    
     task_id = await create_task(
         channel_id=data["channel_id"],
         data={
