@@ -224,13 +224,11 @@ async def update_channel_username_auto(
     if client is None or entity is None:
         return False, "Channel not found"
 
-
     base_username = (
         username
         .replace("@", "")
         .strip()
     )
-
 
     for i in range(0, 101):
 
@@ -239,8 +237,9 @@ async def update_channel_username_auto(
         else:
             new_username = f"{base_username}{i}"
 
-
         try:
+
+            print("Trying:", new_username)
 
             await client(
                 UpdateUsernameRequest(
@@ -249,35 +248,30 @@ async def update_channel_username_auto(
                 )
             )
 
-
             entity.username = new_username
-
 
             return True, (
                 f"Username updated: @{new_username}"
             )
 
-
         except Exception as e:
 
-            error = str(e)
+            import traceback
+            traceback.print_exc()
 
+            error = str(e)
+            print("FULL ERROR:", repr(e))
 
             if "USERNAME_OCCUPIED" in error:
 
-                print(
-                    f"❌ {new_username} taken"
-                )
-
+                print(f"❌ {new_username} taken")
                 continue
-
 
             elif "USERNAME_INVALID" in error:
 
                 return False, (
                     "Invalid username format"
                 )
-
 
             else:
 
@@ -288,10 +282,9 @@ async def update_channel_username_auto(
 
                 return False, error
 
-
     return False, (
         "No available username found"
-            )
+    )
     
 async def update_channel_photo(channel_id: int, photo_path: str):
 
