@@ -10,10 +10,17 @@ client = AsyncIOMotorClient(MONGO_URI)
 
 db = client[DATABASE_NAME]
 
+print("===================================")
+print("DATABASE_NAME:", DATABASE_NAME)
+print("DB NAME:", db.name)
+print("===================================")
+
 channels = db.channels
 settings = db.settings
 broadcast_logs = db.broadcast_logs
+scheduled_tasks = db.scheduled_tasks
 
+print("COLLECTION:", scheduled_tasks.name)
 
 async def save_channel(
     channel_id: int,
