@@ -10,23 +10,36 @@ scheduled_tasks = db.scheduled_tasks
 
 async def create_task(channel_id, data, run_at):
 
-    print("CREATE_TASK START")
+    print("========== CREATE TASK ==========")
+    print("Channel ID:", channel_id)
+    print("Run At:", run_at)
+    print("Data:", data)
 
-    result = await scheduled_tasks.insert_one({
-        "channel_id": channel_id,
-        "data": data,
-        "run_at": run_at,
-        "status": "pending",
-        "created_at": datetime.utcnow(),
-        "completed_at": None,
-        "error": None,
-        "log_message_id": None,
-    })
+    result = await scheduled_tasks.insert_one(
+        {
+            "channel_id": channel_id,
+            "data": data,
+            "run_at": run_at,
+            "status": "pending",
+            "created_at": datetime.utcnow(),
+            "completed_at": None,
+            "error": None,
+            "log_message_id": None,
+        }
+    )
 
     print("INSERTED ID:", result.inserted_id)
 
-    return str(result.inserted_id)
+    doc = await scheduled_tasks.find_one(
+        {
+            "_id": result.inserted_id
+        }
+    )
 
+    print("FOUND AFTER INSERT:", doc)
+    print("========== END CREATE TASK ==========")
+
+    return str(result.inserted_id)
 
 
 async def get_pending_tasks():
